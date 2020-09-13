@@ -36,6 +36,7 @@ rm(list = ls())
 # pathの設定（Rstudioで実行する場合）
 
 path <- "/Users/Michi/Dropbox/GitHub/covid19-japan-policies/household_support_monthly/R"
+#path <- "D:/Dropbox/GitHub/covid19-japan-policies/household_support_monthly/R"
 
 setwd(path)
 
@@ -586,7 +587,7 @@ g_seiho_people <- seikatsu %>% ggplot(aes(x=year_month, y=persons_total)) +
       theme_minimal(base_family = font) +
  　　 scale_x_date(breaks = "2 month", date_labels = "%Y-%m") +
    　 theme(axis.text.x = element_text(angle = 30, hjust = 1))+
-   　 ylab("被保護世帯（単位：1万人）")  +
+   　 ylab("被保護人員数（単位：1万人）")  +
       xlab("年月") +
       scale_y_continuous(limits = c(200,  210),oob = rescale_none)
     
