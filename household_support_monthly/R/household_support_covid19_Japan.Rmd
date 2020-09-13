@@ -25,7 +25,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-このサイトは、安藤道人・大西連「」に掲載しているグラフを、インタラクティブなグラフとして掲載している。各グラフの説明については、この記事を参照されたい。
+このサイトは、安藤道人・大西連[コロナ渦で生活困窮者への家賃補助と現金貸付が急増：独自入手した厚生労働省データを用いた検証](https://note.com/ohnishiren/n/n7c0773c4f861)に掲載しているグラフを、インタラクティブなグラフとして掲載している。各グラフの説明については、この記事を参照されたい。
 
 
 また、元データやRMarkdownファイルは[GitHub](https://github.com/michihito-ando/covid19-japan-policies)の「household_support_monthly」のフォルダで公開しているほか、本サイトでもコードは確認できるようにしている。
@@ -239,7 +239,7 @@ df_merged <- dplyr::bind_rows(raw_data, per_pop)
 ```
 
 
-```{r}
+```{r,include=FALSE}
 ## Generate "long" data frames for RMarkdown and R analysis
 
 # Select necesssary data for raw-number df
@@ -272,7 +272,7 @@ combined_df = purrr::map_dfr(files, readr::read_csv)
 ```
 
 
-```{r}
+```{r,include=FALSE}
 ##「被保護者調査」のデータ読み込み##
 
 # 変数名の英語化
@@ -300,7 +300,7 @@ df <- subset(df, !(is.na(df$municipality)))
 df[,2:9] <- lapply(df[,2:9], as.numeric)
 ```
 
-```{r}
+```{r,include=FALSE}
 ##自治体コードの読み込みと統合##
 
 region_code <- read_excel("region_code.xls")
@@ -316,7 +316,7 @@ df <- df %>% select(-"団体コード",-"都道府県名\n（カナ）", -"市�
 df <- df[, c(10,1,11,2,3,4,5,6,7,8,9)]
 ```
 
-```{r}
+```{r,include=FALSE}
 ##「被保護者調査」の前処理##
 
 for (i in 1:nrow(df)){
@@ -338,7 +338,7 @@ df <- df %>% rename("prefecture"  = "Group.1",
 
 ```
 
-```{r}
+```{r,include=FALSE}
 ##都道府県人口の読み込みと統合##
 
 population <- read_excel("prefec_pop_estimates2019.xlsx")
@@ -373,7 +373,7 @@ df <- df %>% rename("都道府県"  = "prefecture",
                     )
 ```
 
-```{r}
+```{r,include=FALSE}
 ## 「被保護者調査」の前処理 ##
 
 #全国データの抽出
@@ -436,7 +436,7 @@ df <- df %>% mutate(per_mille_diff_persons_total = df$diff_persons_total/df$popu
 ```
 
 
-```{r}
+```{r,include=FALSE}
 #Wide > Long, using "number" ()
 df_all_long <- df_all %>%
   tidyr::pivot_longer(col = -c("prefecture","year_month" ,"population"), names_to = "category", values_to = "number")
@@ -458,7 +458,7 @@ for (i in 2:nrow(df_all_long)) {
 df_all_long[df_all_long$year_month=="2019-01-01", "diff"] <- 0
 ```
 
-```{r}
+```{r,include=FALSE}
 # df_long <- tidyr::gather(data = df, key = "category", value = "number",-c("prefecture","year_month" ,"population"))
 
 df_long <- df %>%
@@ -483,7 +483,7 @@ df_long[df_long$year_month=="2019-01-01", "diff"] <- 0
 ```
 
 
-```{r}
+```{r,include=FALSE}
 # df_long <- tidyr::gather(data = df, key = "category", value = "number",-c("prefecture","year_month" ,"population"))
 
 df_long <- df %>%
