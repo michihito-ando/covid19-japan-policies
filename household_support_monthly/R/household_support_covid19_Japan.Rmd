@@ -25,10 +25,10 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-このサイトは、安藤道人・大西連[コロナ渦で生活困窮者への家賃補助と現金貸付が急増：独自入手した厚生労働省データを用いた検証](https://note.com/ohnishiren/n/n7c0773c4f861)に掲載しているグラフを、インタラクティブなグラフとして掲載している。各グラフの説明については、この記事を参照されたい。
+このサイトは、安藤道人・大西連「[コロナ渦で生活困窮者への家賃補助と現金貸付が急増：独自入手した厚生労働省データを用いた検証](https://note.com/ohnishiren/n/n7c0773c4f861)」に掲載しているグラフを、インタラクティブなグラフとして掲載している。各グラフの説明については、元記事を参照してほしい。
 
 
-また、元データやRMarkdownファイルは[GitHub](https://github.com/michihito-ando/covid19-japan-policies)の「household_support_monthly」のフォルダで公開しているほか、本サイトでもコードは確認できるようにしている。
+また、元データやRMarkdownファイルは[GitHub](https://github.com/michihito-ando/covid19-japan-policies)の「household_support_monthly」のフォルダで公開しているほか、本サイトでも一部のコードは確認できる。
 
 ```{r, include=FALSE}
 rm(list = ls())
@@ -358,7 +358,7 @@ population <- population %>% rename("prefecture" = "prefec")
 df <- dplyr::full_join(df, population, by = "prefecture")
 ```
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, include=FALSE}
 ##「被保護者調査」の変数名の日本語化(shiny用のため使用せず)##
 df <- df %>% rename("都道府県"  = "prefecture",
                     "年月" = "year_month",
