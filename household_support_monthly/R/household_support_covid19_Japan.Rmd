@@ -25,8 +25,9 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-このサイトは、安藤道人・大西連「[コロナ渦で生活困窮者への家賃補助と現金貸付が急増：独自入手した厚生労働省データを用いた検証](https://note.com/ohnishiren/n/n7c0773c4f861)」に掲載しているグラフを、インタラクティブなグラフとして掲載している。各グラフの説明については、元記事を参照してほしい。
+このサイトは、安藤道人・大西連「[コロナ渦で生活困窮者への家賃補助と現金貸付が急増：独自入手した厚生労働省データを用いた検証](https://note.com/ohnishiren/n/n7c0773c4f861)」に掲載しているグラフを、インタラクティブなグラフとして掲載している。
 
+生活保護・住居確保給付金・総合福祉資金（緊急小口資金・総合支援資金）の利用実績の全国集計のグラフであり、各グラフの説明については、元記事を参照してほしい。
 
 また、元データやRMarkdownファイルは[GitHub](https://github.com/michihito-ando/covid19-japan-policies)の「household_support_monthly」のフォルダで公開しているほか、本サイトでも一部のコードは確認できる。
 
@@ -509,9 +510,9 @@ df_long[df_long$year_month=="2019-01-01", "diff"] <- 0
 ```
 
 
-# 全国での集計値
+# 生活保護
 
-## 生活保護世帯数
+## 生活保護受給世帯数
 ```{r}
 seikatsu <- df_all_long
 
@@ -544,7 +545,7 @@ g_seiho_households <- g_seiho_households + ggtitle("(a)世帯数") +
 ```
 
 
-## 生活保護世帯数の前月差
+## 生活保護受給世帯数の前月差
 ```{r}
 seikatsu <-  df_all_long
 
@@ -571,7 +572,7 @@ ggsave(file = "seiho_households_diff.png", plot = g_seiho_households_diff)
 ```
 
 
-## 生活保護人員数
+## 生活保護受給者数
 ```{r}
 seikatsu <-  df_all_long
 
@@ -604,7 +605,7 @@ g_seiho_people <- g_seiho_people + ggtitle("(b)人員数") +
 ```
 
 
-## 生活保護人員数の前月差
+## 生活保護受給者数の前月差
 ```{r}
 seikatsu <-  df_all_long
 
@@ -644,9 +645,9 @@ g_seiho_merge <- g_seiho_households + g_seiho_people +
 ggsave(file = "seiho_household_people.png", plot = g_seiho_merge, width = 9, height = 4.5) 
 ```
  
+# 住居確保給付金
 
-## 住居確保給付金
-### 住居確保給付金の申請件数
+## 住居確保給付金の申請件数
 ```{r}
 jukyo1901_2006 <- df_long_num %>% select(prefec, date, jukyo_apply)
 
@@ -676,7 +677,7 @@ g_jukyo_apply <- g_jukyo_apply + ggtitle("(a)申請件数") +
 ```
 
 
-### 住居確保給付金の決定件数
+## 住居確保給付金の決定件数
 ```{r}
 jukyo1901_2006 <- df_long_num %>% select(prefec, date, jukyo_number)
 
@@ -719,7 +720,7 @@ ggsave(file = "jukyo_apply_number.png", plot = g_jukyo_merge, width = 9, height 
 ```
  
  
-### 住居確保給付金の支給済額
+## 住居確保給付金の支給済額
 ```{r}
 jukyo1901_2006 <- df_long_num %>% select(prefec, date, jukyo_payment_amount)
 
@@ -753,9 +754,9 @@ ggsave(file = "jukyo_amounts.png", plot = g_jukyo_amounts, width = 5, height = 4
 ```
 
 
-## 緊急小口資金・総合支援資金
+# 緊急小口資金・総合支援資金
 
-### 緊急小口資金の申請件数
+## 緊急小口資金の申請件数
 ```{r}
 koguchi_1901_2008 <- df_long_num %>% select(prefec, date,koguchi_apply)
 
@@ -783,7 +784,7 @@ g_koguchi_apply <- g_koguchi_apply + ggtitle("(a)緊急小口資金の申請件�
 
 ```
 
-### 緊急小口資金の決定件数
+## 緊急小口資金の決定件数
 ```{r}
 koguchi_1901_2008 <- df_long_num %>% select(prefec, date,koguchi_number)
 
@@ -811,7 +812,7 @@ g_koguchi_number <- g_koguchi_number + ggtitle("(b)緊急小口資金の決定�
 
 ```
 
-### 総合支援資金の申請件数
+## 総合支援資金の申請件数
 ```{r}
 sogo_1901_2001 <- df_long_num %>% select(prefec, date,sogo_apply)
 
@@ -840,7 +841,7 @@ g_sogo_apply <- g_sogo_apply + ggtitle("(c)総合支援資金の申請件数")�
      theme(axis.text.x = element_text(angle=30, hjust=1))
 ```
 
-### 総合支援資金の決定件数
+## 総合支援資金の決定件数
 ```{r}
 sogo_1901_2001 <- df_long_num %>% select(prefec, date,sogo_number)
 
@@ -882,7 +883,7 @@ ggsave(file = "koguchi_sogo_apply_number.png", plot = g_koguchi_sogo_apply_numbe
 ```
 
 
-### 緊急小口資金の決定金額
+## 緊急小口資金の決定金額
 ```{r}
 koguchi_1901_2008 <- df_long_num%>% select(prefec, date,koguchi_payment_amount)
 
@@ -912,7 +913,7 @@ g_koguchi_amounts <- g_koguchi_amounts + ggtitle("(a)緊急小口資金の決定
 ```
 
 
-### 総合支援資金の決定金額
+## 総合支援資金の決定金額
 ```{r}
 sogo_1901_2001 <- df_long_num %>% select(prefec, date,sogo_payment_amount)
 
