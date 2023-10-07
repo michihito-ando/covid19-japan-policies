@@ -1,0 +1,162 @@
+
+## hogo_sum.csvの変数
+
+prefecture_kanji : 都道府県（漢字表記）
+prefec : 都道府県（アルファベット表記）
+id : 都道府県 id
+date : 年月
+year : 年
+month : 月
+households_total : 被保護世帯数
+householsds_receive : 被保護世帯 現に保護を受けたもの
+households_suspend : 被保護世帯 保護停止中のもの
+persons_total : 被保護実人員
+persons_receive : 被保護実人員 現に保護を受けたもの
+persons_suspend : 被保護実人員 保護停止中のもの
+households_start : 保護開始世帯数
+households_end : 保護廃止世帯数
+
+## hogo_sum_percapita.csvの変数
+
+prefecture_kanji : 都道府県（漢字表記）
+prefec : 都道府県（アルファベット表記）
+id : 都道府県 id
+year : 年
+month : 月
+date : 年月
+households_total : 人口10万人あたり被保護世帯数
+householsds_receive : 人口10万人あたり被保護世帯 現に保護を受けたもの
+households_suspend : 人口10万人あたり被保護世帯 保護停止中のもの
+persons_total : 人口10万人あたり被保護実人員
+persons_receive : 人口10万人あたり被保護実人員 現に保護を受けたもの
+persons_suspend : 人口10万人あたり被保護実人員 保護停止中のもの
+households_start : 人口10万人あたり保護開始世帯数
+households_end : 人口10万人あたり保護廃止世帯数
+population_total : 県民総人口（千人）
+population_male : 県民男性人口（千人）
+population_female : 県民女性人口（千人）
+
+#####
+year_lag_households_receive : 人口10万人あたり被保護世帯 現に保護を受けたもの の一年（12次）のラグ変数
+yoy_households_receive : 人口10万人あたり被保護世帯 現に保護を受けたもの の前年同月差分
+year_lag_persons_receive : 人口10万人あたり被保護実人員 現に保護を受けたもの の一年（12次）のラグ変数
+yoy_households_receive : 人口10万人あたり被保護実人員 現に保護を受けたもの の前年同月差分
+diff_2018_households_receive : 人口10万人あたり被保護世帯 現に保護をうけたもの の 2018年同月との差分
+diff_2018_persons_receive : 人口10万人あたり被保護実人員 現に保護をうけたもの の 2018年同月との差分
+households_total_19Jan : 人口10万人あたり2019年1月時点での被保護世帯数
+households_receive_19Jan : 人口10万人あたり2019年1月時点での被保護世帯 現に保護を受けたもの
+persons_total_19Jan : 人口10万人あたり2019年1月時点での被保護実人員 
+persons_receive_19Jan : 人口10万人あたり2019年1月時点での被保護実人員 現に保護を受けたもの
+households_total_base19Jan : 人口10万人あたり2019年1月を基準としたときの被保護世帯数比
+households_receive_base19Jan : 人口10万人あたり2019年1月を基準としたときの被保護世帯数 現に保護を受けたものの比
+persons_total_base19Jan : 人口10万人あたり2019年1月を基準としたときの被保護実人員比
+persons_receive_base19Jan : 人口10万人あたり2019年1月を基準としたときの被保護実人員 現に保護を受けたものの比
+households_total_18 : 人口10万人あたり2018年の被保護世帯数 
+households_receive_18 : 人口10万人あたり2018年の被保護世帯数 現に保護を受けたもの
+persons_total_18 : 人口10万人あたり2018年の被保護実人員
+persons_receive_18 : 人口10万人あたり2018年の被保護実人員 現に保護を受けたもの
+households_total_base18 : 人口10万人あたり2018年同月の被保護世帯数を基準としたときの被保護世帯数比 
+households_receive_base18 : 人口10万人あたり2018年同月の被保護世帯 現に保護を受けたものを基準としたときの被保護世帯数 現に保護を受けたものの比
+persons_total_base18 : 人口10万人あたり2018年同月の被保護実人員を基準としたときの被保護実人員比
+persons_receive_base18 : 人口10万人あたり2018年同月の被保護実人員 現に保護を受けたものを基準としたときの被保護実人員 現に保護を受けたものの比
+#####
+
+
+## koguchi_sogo_jukyo.csvの変数
+prefec : 都道府県（アルファベット表記）
+prefec_kanji : 都道府県（漢字表記）
+id : 都道府県 id
+year : 年
+month : 月
+koguchi_apply : 緊急小口 申請件数
+koguchi_number : 緊急小口 決定件数 
+koguchi_payment_amount : 緊急小口 決定金額
+sogo_apply : 総合支援 申請件数
+sogo_number : 総合支援 決定件数
+sogo_payment_amount : 総合支援 決定金額
+jukyo_apply : 住居確保 申請件数
+jukyo_number : 住居確保 決定件数
+jukyo_payment_amount : 住居確保 決定金額
+koguchi_number_19Jan : 2019年1月の緊急小口 決定件数
+sogo_number_19Jan : 2019年1月の総合支援 決定件数
+jukyo_number_19Jan : 2019年1月の住居確保 決定件数
+koguchi_number_base19Jan : 2019年1月を基準にしたときの緊急小口 決定件数比
+sogo_number_base19Jan : 2019年1月を基準にしたときの総合支援 決定件数比
+jukyo_number_base19Jan : 2019年1月を基準にしたときの住居確保 決定件数比
+
+
+## koguchi_sogo_jukyo_percapita.csvの変数
+
+prefec : 都道府県（アルファベット表記）
+prefec_kanji : 都道府県（漢字表記）
+id : 都道府県 id
+year : 年
+month : 月
+population_total : 総人口（千人）
+population_male : 男性人口（千人）
+population_female : 女性人口（千人）
+koguchi_apply : 人口10万人あたり緊急小口 申請件数
+koguchi_number : 人口10万人あたり緊急小口 決定件数 
+koguchi_payment_amount : 人口10万人あたり緊急小口 決定金額
+sogo_apply : 人口10万人あたり総合支援 申請件数
+sogo_number : 人口10万人あたり総合支援 決定件数
+sogo_payment_amount : 人口10万人あたり総合支援 決定金額
+jukyo_apply : 住居確保 人口10万人あたり申請件数
+jukyo_number : 住居確保 人口10万人あたり決定件数
+jukyo_payment_amount : 人口10万人あたり住居確保 決定金額
+koguchi_number_19Jan : 人口10万人あたり2019年1月の緊急小口 決定件数
+sogo_number_19Jan : 人口10万人あたり2019年1月の総合支援 決定件数
+jukyo_number_19Jan : 人口10万人あたり2019年1月の住居確保 決定件数
+koguchi_number_base19Jan : 2019年1月を基準にしたときの人口10万人あたり緊急小口 決定件数比
+sogo_number_base19Jan : 2019年1月を基準にしたときの人口10万人あたり総合支援 決定件数比
+jukyo_number_base19Jan : 2019年1月を基準にしたときの人口10万人あたり住居確保 決定件数比
+
+## unemp_benefit_number.csv
+
+prefec : 都道府県（アルファベット表記）
+prefec_kanji : 都道府県（漢字表記）
+id : 都道府県 id
+year : 年
+month : 月
+date : 日付
+unemp_benefit_number_total : 受給者実人員数 合計
+unemp_benefit_number_male : 受給者実人員数 男性合計 
+unemp_benefit_number_female : 受給者実人員数 女性合計 
+unemep_benefit_yen_total : 支給金額合計
+unemp_benefit_yen_male : 男性への支給金額合計
+unemp_benefit_yen_female : 女性への支給金額合計
+
+## unemp_benefit_number_percapita.csv
+
+prefec : 都道府県（アルファベット表記）
+prefec_kanji : 都道府県（漢字表記）
+id : 都道府県 id
+year : 年
+date : 日付
+population_total : 県民総人口（千人）
+population_male	: 県民男性人口（千人）
+population_female : 県民女性人口（千人）	
+unemp_benefit_number_total : 人口10万人あたり受給者実人員数 合計
+unemp_benefit_number_male : 男性人口10万人あたり受給者実人員数 男性合計 
+unemp_benefit_number_female : 女性人口10万人あたり受給者実人員数 女性合計 
+unemep_benefit_yen_total : 人口10万人あたり支給金額合計
+unemp_benefit_yen_male : 男性人口10万人あたり男性への支給金額合計
+unemp_benefit_yen_female : 女性人口10万人あたり女性への支給金額合計
+
+
+## yoy_hogo_households_receive_by_type.csv
+date : 日付
+year : 年
+month : 月
+households_receive_total : 被保護世帯数（2018年には、類型データだけではなく世帯総数データも存在。それが引っ付いているっぽい。）
+yoy_households_receive_elderly : 高齢者世帯数の前年同月差
+yoy_households_receive_singlemother : 母子世帯数の前年同月差
+yoy_households_receive_disabled	: 障害者世帯数の前年同月差
+yoy_households_receive_sick :  傷病者世帯数の前年同月差
+yoy_households_receive_others : その他の世帯数の前年同月差
+
+
+
+
+
+

@@ -878,13 +878,13 @@ unemp_benefit_number_2017_2022  %>%
   readr::write_excel_csv("output/unemp_benefit_number.csv")
 ```
 
-##男女別都道府県人口データの読み込み
+## 都道府県人口10万人あたり（合計・男女別）に変換
 
 都道府県人口データそのものは冒頭でも読み込み使用しているので注意。
 ここでは男女別のために読み込んでいる。
 
 2020.11.25追加
-## 10万人あたりに変換
+
 ```{r}
 # データ統合
 #unemp_benefit_number_2017_2022 <- dplyr::left_join(unemp_benefit_number_2017_2022, population_by_gender, by = c("id", "year"))
@@ -1355,14 +1355,15 @@ yoy_hogo_households_receive_by_type <- yoy_hogo_households_receive_by_type %>%
                      names_from = "type", 
                      values_from  = "yoy_lag_number")
 
-# %>% tidyr::drop_na() これを無効化しないといけなかったけど、なぜ？Ando 2022.11.8
+# %>% tidyr::drop_na() 無効化 Ando 2022.11.8
 
 yoy_hogo_households_receive_by_type <- yoy_hogo_households_receive_by_type %>% 
-  dplyr::rename(yoy_households_receive_elderly= households_receive_elderly, 
+  dplyr::rename(yoy_households_receive_elderly = households_receive_elderly, 
                 yoy_households_receive_singlemother = households_receive_singlemother, 
                 yoy_households_receive_disabled  = households_receive_disabled, 
                 yoy_households_receive_sick = households_receive_sick,  
-                yoy_households_receive_others = households_receive_others)
+                yoy_households_receive_others = households_receive_others) %>%
+  dplyr::select(- households_receive_total) # 2023.10.4　安藤追加（不必要なため）
 
 yoy_hogo_households_receive_by_type %>% 
   write_csv("output/yoy_hogo_households_receive_by_type.csv")
