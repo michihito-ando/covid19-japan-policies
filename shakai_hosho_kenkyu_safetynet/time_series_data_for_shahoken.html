@@ -11,7 +11,7 @@
 
 <meta name="author" content />
 
-<meta name="date" content="2023-10-04" />
+<meta name="date" content="2023-10-17" />
 
 <title>コロナ禍の三層のセーフティネットの都道府県別月次データ作成</title>
 
@@ -2923,7 +2923,7 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">コロナ禍の三層のセーフティネットの都道府県別月次データ作成</h1>
 <h4 class="author"></h4>
-<h4 class="date">2023-10-04</h4>
+<h4 class="date">2023-10-17</h4>
 
 </div>
 
@@ -3444,49 +3444,65 @@ border-radius: 0px;
 <span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">koguchi_number_base19Jan =</span> koguchi_number<span class="sc">/</span>koguchi_number_19Jan) <span class="sc">%&gt;%</span> </span>
 <span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">sogo_number_base19Jan =</span> sogo_number<span class="sc">/</span>sogo_number_19Jan) <span class="sc">%&gt;%</span> </span>
 <span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">jukyo_number_base19Jan =</span> jukyo_number<span class="sc">/</span>jukyo_number_19Jan) </span></code></pre></div>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="co"># 合計値の出力 2022Feb1</span></span>
-<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>koguchi_sogo_jukyo_2019jan_2021may <span class="sc">%&gt;%</span> readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/koguchi_sogo_jukyo.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>koguchi_sogo_jukyo_2019jan_2021may <span class="ot">&lt;-</span> koguchi_sogo_jukyo_2019jan_2021may <span class="sc">%&gt;%</span> </span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(prefec_id, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>) <span class="co">#2023.10.17 安藤, グラフ用の都道府県名の追加</span></span></code></pre></div>
 </div>
-<div id="人口10万人あたりの緊急小口総合支援と住居確保データ" class="section level2" number="5.11">
-<h2><span class="header-section-number">5.11</span>
-人口10万人あたりの緊急小口・総合支援と住居確保データ</h2>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co"># 人口データの結合</span></span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>koguchi_sogo_jukyo_2019jan_2021may <span class="ot">&lt;-</span> koguchi_sogo_jukyo_raw <span class="sc">%&gt;%</span> </span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(population_by_gender,<span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>))</span>
+<div id="データ書き出し" class="section level2" number="5.11">
+<h2><span class="header-section-number">5.11</span> データ書き出し</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co"># order (2023.10.17 安藤)</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>koguchi_sogo_jukyo_2019jan_2021may <span class="ot">&lt;-</span> koguchi_sogo_jukyo_2019jan_2021may <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>  <span class="fu">arrange</span>(id, year, month)</span>
 <span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a></span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="ot">&lt;-</span> koguchi_sogo_jukyo_2019jan_2021may <span class="sc">%&gt;%</span></span>
-<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(koguchi_apply<span class="sc">:</span>jukyo_payment_amount,</span>
-<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a>                <span class="sc">~</span>(.x <span class="sc">/</span> population_total <span class="sc">*</span> <span class="dv">100</span>))) <span class="co"># per 100000 population</span></span>
-<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a></span>
-<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="co"># koguchi_sogo_jukyo_2019jan_2021may &lt;- koguchi_sogo_jukyo_raw %&gt;% </span></span>
-<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="co">#   dplyr::left_join(population,by = c(&quot;prefec_kanji&quot;, &quot;prefec&quot;, &quot;id&quot;, &quot;year&quot;))</span></span>
-<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a></span>
-<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a><span class="co">#人口あたりデータの作成(100000人あたり:per 100 thousand)</span></span>
-<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a><span class="co"># koguchi_sogo_jukyo_percapita &lt;- koguchi_sogo_jukyo_2019jan_2021may %&gt;%</span></span>
-<span id="cb25-14"><a href="#cb25-14" tabindex="-1"></a><span class="co">#   dplyr::mutate(across(koguchi_apply:jukyo_payment_amount,</span></span>
-<span id="cb25-15"><a href="#cb25-15" tabindex="-1"></a><span class="co">#                 ~(.x / population * 100))) # per 100000 population</span></span></code></pre></div>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co"># 2019年１月のデータを抽出</span></span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>dat_2019Jan <span class="ot">&lt;-</span> koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
-<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(date <span class="sc">==</span> <span class="st">&quot;2019-01-01&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(koguchi_number, sogo_number,jukyo_number, id)</span>
-<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a></span>
-<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>dat_2019Jan <span class="ot">&lt;-</span> dat_2019Jan <span class="sc">%&gt;%</span> </span>
-<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">koguchi_number_19Jan =</span> koguchi_number,</span>
-<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a>                <span class="at">sogo_number_19Jan =</span> sogo_number,</span>
-<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a>                <span class="at">jukyo_number_19Jan =</span> jukyo_number)</span></code></pre></div>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co"># 2019年1月基準のデータを作成</span></span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="ot">&lt;-</span> koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(dat_2019Jan, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>)</span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a></span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="ot">&lt;-</span> koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">koguchi_number_base19Jan =</span> koguchi_number<span class="sc">/</span>koguchi_number_19Jan) <span class="sc">%&gt;%</span> </span>
-<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">sogo_number_base19Jan =</span> sogo_number<span class="sc">/</span>sogo_number_19Jan) <span class="sc">%&gt;%</span> </span>
-<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">jukyo_number_base19Jan =</span> jukyo_number<span class="sc">/</span>jukyo_number_19Jan) </span></code></pre></div>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="ot">&lt;-</span> koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
-<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(prefec_id, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>) <span class="co">#2022/11/14 グラフ用の都道府県名の追加</span></span></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="do">## csv保存</span></span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
-<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/koguchi_sogo_jukyo_percapita.csv&quot;</span>)</span></code></pre></div>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="co"># 合計値の出力 2022Feb1</span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a>koguchi_sogo_jukyo_2019jan_2021may <span class="sc">%&gt;%</span> readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/koguchi_sogo_jukyo.csv&quot;</span>)</span></code></pre></div>
+</div>
+<div id="人口10万人あたりの緊急小口総合支援と住居確保データ" class="section level2" number="5.12">
+<h2><span class="header-section-number">5.12</span>
+人口10万人あたりの緊急小口・総合支援と住居確保データ</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co"># 人口データの結合</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>koguchi_sogo_jukyo_2019jan_2021may <span class="ot">&lt;-</span> koguchi_sogo_jukyo_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(population_by_gender,<span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>))</span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="ot">&lt;-</span> koguchi_sogo_jukyo_2019jan_2021may <span class="sc">%&gt;%</span></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(koguchi_apply<span class="sc">:</span>jukyo_payment_amount,</span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a>                <span class="sc">~</span>(.x <span class="sc">/</span> population_total <span class="sc">*</span> <span class="dv">100</span>))) <span class="co"># per 100000 population</span></span>
+<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a><span class="co"># koguchi_sogo_jukyo_2019jan_2021may &lt;- koguchi_sogo_jukyo_raw %&gt;% </span></span>
+<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a><span class="co">#   dplyr::left_join(population,by = c(&quot;prefec_kanji&quot;, &quot;prefec&quot;, &quot;id&quot;, &quot;year&quot;))</span></span>
+<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a><span class="co">#人口あたりデータの作成(100000人あたり:per 100 thousand)</span></span>
+<span id="cb26-13"><a href="#cb26-13" tabindex="-1"></a><span class="co"># koguchi_sogo_jukyo_percapita &lt;- koguchi_sogo_jukyo_2019jan_2021may %&gt;%</span></span>
+<span id="cb26-14"><a href="#cb26-14" tabindex="-1"></a><span class="co">#   dplyr::mutate(across(koguchi_apply:jukyo_payment_amount,</span></span>
+<span id="cb26-15"><a href="#cb26-15" tabindex="-1"></a><span class="co">#                 ~(.x / population * 100))) # per 100000 population</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co"># 2019年１月のデータを抽出</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>dat_2019Jan <span class="ot">&lt;-</span> koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(date <span class="sc">==</span> <span class="st">&quot;2019-01-01&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(koguchi_number, sogo_number,jukyo_number, id)</span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>dat_2019Jan <span class="ot">&lt;-</span> dat_2019Jan <span class="sc">%&gt;%</span> </span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">koguchi_number_19Jan =</span> koguchi_number,</span>
+<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a>                <span class="at">sogo_number_19Jan =</span> sogo_number,</span>
+<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a>                <span class="at">jukyo_number_19Jan =</span> jukyo_number)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co"># 2019年1月基準のデータを作成</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="ot">&lt;-</span> koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(dat_2019Jan, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="ot">&lt;-</span> koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">koguchi_number_base19Jan =</span> koguchi_number<span class="sc">/</span>koguchi_number_19Jan) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">sogo_number_base19Jan =</span> sogo_number<span class="sc">/</span>sogo_number_19Jan) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">jukyo_number_base19Jan =</span> jukyo_number<span class="sc">/</span>jukyo_number_19Jan) </span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="ot">&lt;-</span> koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(prefec_id, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>) <span class="co">#2022/11/14 グラフ用の都道府県名の追加</span></span></code></pre></div>
+</div>
+<div id="データ書き出し-1" class="section level2" number="5.13">
+<h2><span class="header-section-number">5.13</span> データ書き出し</h2>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="do">## order (2023.10.17 安藤)</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="ot">&lt;-</span> koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>  <span class="fu">arrange</span>(id, year, month)</span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a><span class="do">## csv保存</span></span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a>koguchi_sogo_jukyo_percapita <span class="sc">%&gt;%</span> </span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/koguchi_sogo_jukyo_percapita.csv&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="失業給付" class="section level1" number="6">
@@ -3507,21 +3523,21 @@ border-radius: 0px;
 <div id="一般被保険者の求職者給付状況受給者実人員および支給金額の計男女のデータ2017.4-2020.11" class="section level2" number="6.1">
 <h2><span class="header-section-number">6.1</span>
 一般被保険者の求職者給付状況:受給者実人員および支給金額の計男女のデータ(2017.4-2020.11)</h2>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co">#time_series_data_updated.Rmdから引用　2021June8 </span></span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="co">#20201124</span></span>
-<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="co"># フォルダ内のcsvファイルの一括読み込み</span></span>
-<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a></span>
-<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a><span class="co"># 元はエクセルファイルだが、以下でCSVへ変換している</span></span>
-<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="co"># /2020COVID_impact_R/R_2021/unemp_benefit_number_data_csv/unemp_benefit_number_excel_csv.R</span></span>
-<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a></span>
-<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a><span class="do">##ディレクトリの変更(被保護調査のcsvが入っているサブフォルダ)</span></span>
-<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a>path_hogo_csv <span class="ot">&lt;-</span> <span class="fu">str_c</span>(path, <span class="st">&quot;/unemp_benefit_number_data_csv_17apr_20nov&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a><span class="fu">setwd</span>(path_hogo_csv)</span>
-<span id="cb30-12"><a href="#cb30-12" tabindex="-1"></a><span class="do">##一括読み込み</span></span>
-<span id="cb30-13"><a href="#cb30-13" tabindex="-1"></a>files <span class="ot">=</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="at">glob =</span> <span class="st">&quot;*.csv&quot;</span>)</span>
-<span id="cb30-14"><a href="#cb30-14" tabindex="-1"></a><span class="do">## よみこんだfilesを結合</span></span>
-<span id="cb30-15"><a href="#cb30-15" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">map_dfr</span>(files, read_csv)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="co">#time_series_data_updated.Rmdから引用　2021June8 </span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a><span class="co">#20201124</span></span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a><span class="co"># フォルダ内のcsvファイルの一括読み込み</span></span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a><span class="co"># 元はエクセルファイルだが、以下でCSVへ変換している</span></span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a><span class="co"># /2020COVID_impact_R/R_2021/unemp_benefit_number_data_csv/unemp_benefit_number_excel_csv.R</span></span>
+<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a><span class="do">##ディレクトリの変更(被保護調査のcsvが入っているサブフォルダ)</span></span>
+<span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a>path_hogo_csv <span class="ot">&lt;-</span> <span class="fu">str_c</span>(path, <span class="st">&quot;/unemp_benefit_number_data_csv_17apr_20nov&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb31-11"><a href="#cb31-11" tabindex="-1"></a><span class="fu">setwd</span>(path_hogo_csv)</span>
+<span id="cb31-12"><a href="#cb31-12" tabindex="-1"></a><span class="do">##一括読み込み</span></span>
+<span id="cb31-13"><a href="#cb31-13" tabindex="-1"></a>files <span class="ot">=</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="at">glob =</span> <span class="st">&quot;*.csv&quot;</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" tabindex="-1"></a><span class="do">## よみこんだfilesを結合</span></span>
+<span id="cb31-15"><a href="#cb31-15" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">map_dfr</span>(files, read_csv)</span></code></pre></div>
 <pre><code>## Rows: 48 Columns: 8
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -3918,58 +3934,58 @@ border-radius: 0px;
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="do">##ディレクトリ戻す</span></span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="fu">setwd</span>(path)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="do">##ディレクトリ戻す</span></span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a><span class="fu">setwd</span>(path)</span></code></pre></div>
 <p>2021.5.21追加</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co"># 年変数の追加 </span></span>
-<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
-<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">year =</span> unemp_benefit_number_2017_2020<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> </span>
-<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>                  stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">1</span>, <span class="dv">4</span>))</span>
-<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a></span>
-<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a><span class="co"># 月変数の追加</span></span>
-<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
-<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">month =</span> unemp_benefit_number_2017_2020<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> </span>
-<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a>                  stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">6</span>, <span class="dv">7</span>)) </span>
-<span id="cb33-10"><a href="#cb33-10" tabindex="-1"></a></span>
-<span id="cb33-11"><a href="#cb33-11" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
-<span id="cb33-12"><a href="#cb33-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">&quot;prefec&quot;</span> <span class="ot">=</span> <span class="st">&quot;都道府県&quot;</span>, <span class="co">#2021Jan29</span></span>
-<span id="cb33-13"><a href="#cb33-13" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_total&quot;</span> <span class="ot">=</span>  <span class="st">&quot;受給者実人数_計&quot;</span>,</span>
-<span id="cb33-14"><a href="#cb33-14" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_male&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_男&quot;</span>,</span>
-<span id="cb33-15"><a href="#cb33-15" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_女&quot;</span>,</span>
-<span id="cb33-16"><a href="#cb33-16" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_total&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_計&quot;</span>,</span>
-<span id="cb33-17"><a href="#cb33-17" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_male&quot;</span>  <span class="ot">=</span> <span class="st">&quot;支給金額_男&quot;</span>,</span>
-<span id="cb33-18"><a href="#cb33-18" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_女&quot;</span>,</span>
-<span id="cb33-19"><a href="#cb33-19" tabindex="-1"></a>                             <span class="st">&quot;date&quot;</span> <span class="ot">=</span> <span class="st">&quot;year_month&quot;</span>)</span>
-<span id="cb33-20"><a href="#cb33-20" tabindex="-1"></a></span>
-<span id="cb33-21"><a href="#cb33-21" tabindex="-1"></a><span class="co"># idの追加</span></span>
-<span id="cb33-22"><a href="#cb33-22" tabindex="-1"></a>prefec_id <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/prefec_id_zenkaku.xlsx&quot;</span>)</span>
-<span id="cb33-23"><a href="#cb33-23" tabindex="-1"></a></span>
-<span id="cb33-24"><a href="#cb33-24" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
-<span id="cb33-25"><a href="#cb33-25" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(prefec_id, <span class="at">by =</span> <span class="st">&quot;prefec&quot;</span>)</span>
-<span id="cb33-26"><a href="#cb33-26" tabindex="-1"></a></span>
-<span id="cb33-27"><a href="#cb33-27" tabindex="-1"></a>unemp_benefit_number_2017_2020<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2017_2020<span class="sc">$</span>year)</span>
-<span id="cb33-28"><a href="#cb33-28" tabindex="-1"></a>unemp_benefit_number_2017_2020<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2017_2020<span class="sc">$</span>month)</span>
-<span id="cb33-29"><a href="#cb33-29" tabindex="-1"></a></span>
-<span id="cb33-30"><a href="#cb33-30" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
-<span id="cb33-31"><a href="#cb33-31" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unemp_benefit_number_total,unemp_benefit_number_male, unemp_benefit_number_female,</span>
-<span id="cb33-32"><a href="#cb33-32" tabindex="-1"></a>                unemp_benefit_yen_total, unemp_benefit_yen_male, unemp_benefit_yen_female, id, date, year) <span class="co">#IDをidのみにする 2022/11/14 </span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co"># 年変数の追加 </span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">year =</span> unemp_benefit_number_2017_2020<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> </span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>                  stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a><span class="co"># 月変数の追加</span></span>
+<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">month =</span> unemp_benefit_number_2017_2020<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> </span>
+<span id="cb34-9"><a href="#cb34-9" tabindex="-1"></a>                  stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">6</span>, <span class="dv">7</span>)) </span>
+<span id="cb34-10"><a href="#cb34-10" tabindex="-1"></a></span>
+<span id="cb34-11"><a href="#cb34-11" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb34-12"><a href="#cb34-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">&quot;prefec&quot;</span> <span class="ot">=</span> <span class="st">&quot;都道府県&quot;</span>, <span class="co">#2021Jan29</span></span>
+<span id="cb34-13"><a href="#cb34-13" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_total&quot;</span> <span class="ot">=</span>  <span class="st">&quot;受給者実人数_計&quot;</span>,</span>
+<span id="cb34-14"><a href="#cb34-14" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_male&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_男&quot;</span>,</span>
+<span id="cb34-15"><a href="#cb34-15" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_女&quot;</span>,</span>
+<span id="cb34-16"><a href="#cb34-16" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_total&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_計&quot;</span>,</span>
+<span id="cb34-17"><a href="#cb34-17" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_male&quot;</span>  <span class="ot">=</span> <span class="st">&quot;支給金額_男&quot;</span>,</span>
+<span id="cb34-18"><a href="#cb34-18" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_女&quot;</span>,</span>
+<span id="cb34-19"><a href="#cb34-19" tabindex="-1"></a>                             <span class="st">&quot;date&quot;</span> <span class="ot">=</span> <span class="st">&quot;year_month&quot;</span>)</span>
+<span id="cb34-20"><a href="#cb34-20" tabindex="-1"></a></span>
+<span id="cb34-21"><a href="#cb34-21" tabindex="-1"></a><span class="co"># idの追加</span></span>
+<span id="cb34-22"><a href="#cb34-22" tabindex="-1"></a>prefec_id <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/prefec_id_zenkaku.xlsx&quot;</span>)</span>
+<span id="cb34-23"><a href="#cb34-23" tabindex="-1"></a></span>
+<span id="cb34-24"><a href="#cb34-24" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb34-25"><a href="#cb34-25" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(prefec_id, <span class="at">by =</span> <span class="st">&quot;prefec&quot;</span>)</span>
+<span id="cb34-26"><a href="#cb34-26" tabindex="-1"></a></span>
+<span id="cb34-27"><a href="#cb34-27" tabindex="-1"></a>unemp_benefit_number_2017_2020<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2017_2020<span class="sc">$</span>year)</span>
+<span id="cb34-28"><a href="#cb34-28" tabindex="-1"></a>unemp_benefit_number_2017_2020<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2017_2020<span class="sc">$</span>month)</span>
+<span id="cb34-29"><a href="#cb34-29" tabindex="-1"></a></span>
+<span id="cb34-30"><a href="#cb34-30" tabindex="-1"></a>unemp_benefit_number_2017_2020 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb34-31"><a href="#cb34-31" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unemp_benefit_number_total,unemp_benefit_number_male, unemp_benefit_number_female,</span>
+<span id="cb34-32"><a href="#cb34-32" tabindex="-1"></a>                unemp_benefit_yen_total, unemp_benefit_yen_male, unemp_benefit_yen_female, id, date, year) <span class="co">#IDをidのみにする 2022/11/14 </span></span></code></pre></div>
 </div>
 <div id="一般被保険者の求職者給付状況受給者実人員および支給金額の計男女のデータ2020.12-2021.10" class="section level2" number="6.2">
 <h2><span class="header-section-number">6.2</span>
 一般被保険者の求職者給付状況:受給者実人員および支給金額の計男女のデータ(2020.12-2021.10)</h2>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co">#20211206</span></span>
-<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="co"># フォルダ内のcsvファイルの一括読み込み</span></span>
-<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a></span>
-<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a><span class="co"># 元はエクセルファイルだが、以下でCSVへ変換している</span></span>
-<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a><span class="co"># /2020COVID_impact_R/R_2021/unemp_benefit_number_data_csv/unemp_benefit_number_excel_csv.R</span></span>
-<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a></span>
-<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a><span class="do">##ディレクトリの変更(被保護調査のcsvが入っているサブフォルダ)</span></span>
-<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a>path_hogo_csv <span class="ot">&lt;-</span> <span class="fu">str_c</span>(path, <span class="st">&quot;/unemp_benefit_number_data_csv_20dec_21oct&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb34-9"><a href="#cb34-9" tabindex="-1"></a><span class="fu">setwd</span>(path_hogo_csv)</span>
-<span id="cb34-10"><a href="#cb34-10" tabindex="-1"></a><span class="do">##一括読み込み</span></span>
-<span id="cb34-11"><a href="#cb34-11" tabindex="-1"></a>files <span class="ot">=</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="at">glob =</span> <span class="st">&quot;*.csv&quot;</span>)</span>
-<span id="cb34-12"><a href="#cb34-12" tabindex="-1"></a><span class="do">## よみこんだfilesを結合</span></span>
-<span id="cb34-13"><a href="#cb34-13" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">map_dfr</span>(files, read_csv)</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co">#20211206</span></span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="co"># フォルダ内のcsvファイルの一括読み込み</span></span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a><span class="co"># 元はエクセルファイルだが、以下でCSVへ変換している</span></span>
+<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a><span class="co"># /2020COVID_impact_R/R_2021/unemp_benefit_number_data_csv/unemp_benefit_number_excel_csv.R</span></span>
+<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a><span class="do">##ディレクトリの変更(被保護調査のcsvが入っているサブフォルダ)</span></span>
+<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a>path_hogo_csv <span class="ot">&lt;-</span> <span class="fu">str_c</span>(path, <span class="st">&quot;/unemp_benefit_number_data_csv_20dec_21oct&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb35-9"><a href="#cb35-9" tabindex="-1"></a><span class="fu">setwd</span>(path_hogo_csv)</span>
+<span id="cb35-10"><a href="#cb35-10" tabindex="-1"></a><span class="do">##一括読み込み</span></span>
+<span id="cb35-11"><a href="#cb35-11" tabindex="-1"></a>files <span class="ot">=</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="at">glob =</span> <span class="st">&quot;*.csv&quot;</span>)</span>
+<span id="cb35-12"><a href="#cb35-12" tabindex="-1"></a><span class="do">## よみこんだfilesを結合</span></span>
+<span id="cb35-13"><a href="#cb35-13" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">map_dfr</span>(files, read_csv)</span></code></pre></div>
 <pre><code>## Rows: 48 Columns: 8
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -4069,60 +4085,60 @@ border-radius: 0px;
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="do">##ディレクトリ戻す</span></span>
-<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a><span class="fu">setwd</span>(path)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="do">##ディレクトリ戻す</span></span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a><span class="fu">setwd</span>(path)</span></code></pre></div>
 <p>2021.5.21追加</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="co"># 年変数の追加 </span></span>
-<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">year =</span> unemp_benefit_number_2020_2021<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">1</span>, <span class="dv">4</span>))</span>
-<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a></span>
-<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a><span class="co"># 月変数の追加</span></span>
-<span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">month =</span> unemp_benefit_number_2020_2021<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">6</span>, <span class="dv">7</span>)) </span>
-<span id="cb37-6"><a href="#cb37-6" tabindex="-1"></a></span>
-<span id="cb37-7"><a href="#cb37-7" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">&quot;prefec_kanji&quot;</span> <span class="ot">=</span> <span class="st">&quot;都道府県&quot;</span>, <span class="co">#2021Jan29</span></span>
-<span id="cb37-8"><a href="#cb37-8" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_total&quot;</span> <span class="ot">=</span>  <span class="st">&quot;受給者実人数_計&quot;</span>,</span>
-<span id="cb37-9"><a href="#cb37-9" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_male&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_男&quot;</span>,</span>
-<span id="cb37-10"><a href="#cb37-10" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_女&quot;</span>,</span>
-<span id="cb37-11"><a href="#cb37-11" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_total&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_計&quot;</span>,</span>
-<span id="cb37-12"><a href="#cb37-12" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_male&quot;</span>  <span class="ot">=</span> <span class="st">&quot;支給金額_男&quot;</span>,</span>
-<span id="cb37-13"><a href="#cb37-13" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_女&quot;</span>,</span>
-<span id="cb37-14"><a href="#cb37-14" tabindex="-1"></a>                             <span class="st">&quot;date&quot;</span> <span class="ot">=</span> <span class="st">&quot;year_month&quot;</span>)</span>
-<span id="cb37-15"><a href="#cb37-15" tabindex="-1"></a></span>
-<span id="cb37-16"><a href="#cb37-16" tabindex="-1"></a></span>
-<span id="cb37-17"><a href="#cb37-17" tabindex="-1"></a><span class="co"># delete &quot;都道府県&quot;　（生保データに合わせる）(Ando移動)</span></span>
-<span id="cb37-18"><a href="#cb37-18" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span></span>
-<span id="cb37-19"><a href="#cb37-19" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;計&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb37-20"><a href="#cb37-20" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;県&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb37-21"><a href="#cb37-21" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji,  <span class="st">&quot;府&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb37-22"><a href="#cb37-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;東京都&quot;</span>, <span class="st">&quot;東京&quot;</span>))</span>
-<span id="cb37-23"><a href="#cb37-23" tabindex="-1"></a></span>
-<span id="cb37-24"><a href="#cb37-24" tabindex="-1"></a></span>
-<span id="cb37-25"><a href="#cb37-25" tabindex="-1"></a><span class="co"># idの追加</span></span>
-<span id="cb37-26"><a href="#cb37-26" tabindex="-1"></a>prefec_id <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/prefec_id.xlsx&quot;</span>)</span>
-<span id="cb37-27"><a href="#cb37-27" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(unemp_benefit_number_2020_2021, prefec_id, <span class="at">by =</span> <span class="st">&quot;prefec_kanji&quot;</span>)</span>
-<span id="cb37-28"><a href="#cb37-28" tabindex="-1"></a>unemp_benefit_number_2020_2021<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2020_2021<span class="sc">$</span>year)</span>
-<span id="cb37-29"><a href="#cb37-29" tabindex="-1"></a>unemp_benefit_number_2020_2021<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2020_2021<span class="sc">$</span>month)</span>
-<span id="cb37-30"><a href="#cb37-30" tabindex="-1"></a></span>
-<span id="cb37-31"><a href="#cb37-31" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span> </span>
-<span id="cb37-32"><a href="#cb37-32" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unemp_benefit_number_total,unemp_benefit_number_male, unemp_benefit_number_female,</span>
-<span id="cb37-33"><a href="#cb37-33" tabindex="-1"></a>                unemp_benefit_yen_total, unemp_benefit_yen_male, unemp_benefit_yen_female, id, date, year) <span class="co">#IDをidのみにする 2022/11/14 </span></span></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>unemp_benefit_number_2017_2021  <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
-<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(unemp_benefit_number_2020_2021)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="co"># 年変数の追加 </span></span>
+<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">year =</span> unemp_benefit_number_2020_2021<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb38-3"><a href="#cb38-3" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" tabindex="-1"></a><span class="co"># 月変数の追加</span></span>
+<span id="cb38-5"><a href="#cb38-5" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">month =</span> unemp_benefit_number_2020_2021<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">6</span>, <span class="dv">7</span>)) </span>
+<span id="cb38-6"><a href="#cb38-6" tabindex="-1"></a></span>
+<span id="cb38-7"><a href="#cb38-7" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">&quot;prefec_kanji&quot;</span> <span class="ot">=</span> <span class="st">&quot;都道府県&quot;</span>, <span class="co">#2021Jan29</span></span>
+<span id="cb38-8"><a href="#cb38-8" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_total&quot;</span> <span class="ot">=</span>  <span class="st">&quot;受給者実人数_計&quot;</span>,</span>
+<span id="cb38-9"><a href="#cb38-9" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_male&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_男&quot;</span>,</span>
+<span id="cb38-10"><a href="#cb38-10" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_女&quot;</span>,</span>
+<span id="cb38-11"><a href="#cb38-11" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_total&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_計&quot;</span>,</span>
+<span id="cb38-12"><a href="#cb38-12" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_male&quot;</span>  <span class="ot">=</span> <span class="st">&quot;支給金額_男&quot;</span>,</span>
+<span id="cb38-13"><a href="#cb38-13" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_女&quot;</span>,</span>
+<span id="cb38-14"><a href="#cb38-14" tabindex="-1"></a>                             <span class="st">&quot;date&quot;</span> <span class="ot">=</span> <span class="st">&quot;year_month&quot;</span>)</span>
+<span id="cb38-15"><a href="#cb38-15" tabindex="-1"></a></span>
+<span id="cb38-16"><a href="#cb38-16" tabindex="-1"></a></span>
+<span id="cb38-17"><a href="#cb38-17" tabindex="-1"></a><span class="co"># delete &quot;都道府県&quot;　（生保データに合わせる）(Ando移動)</span></span>
+<span id="cb38-18"><a href="#cb38-18" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span></span>
+<span id="cb38-19"><a href="#cb38-19" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;計&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb38-20"><a href="#cb38-20" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;県&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb38-21"><a href="#cb38-21" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji,  <span class="st">&quot;府&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb38-22"><a href="#cb38-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;東京都&quot;</span>, <span class="st">&quot;東京&quot;</span>))</span>
+<span id="cb38-23"><a href="#cb38-23" tabindex="-1"></a></span>
+<span id="cb38-24"><a href="#cb38-24" tabindex="-1"></a></span>
+<span id="cb38-25"><a href="#cb38-25" tabindex="-1"></a><span class="co"># idの追加</span></span>
+<span id="cb38-26"><a href="#cb38-26" tabindex="-1"></a>prefec_id <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/prefec_id.xlsx&quot;</span>)</span>
+<span id="cb38-27"><a href="#cb38-27" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(unemp_benefit_number_2020_2021, prefec_id, <span class="at">by =</span> <span class="st">&quot;prefec_kanji&quot;</span>)</span>
+<span id="cb38-28"><a href="#cb38-28" tabindex="-1"></a>unemp_benefit_number_2020_2021<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2020_2021<span class="sc">$</span>year)</span>
+<span id="cb38-29"><a href="#cb38-29" tabindex="-1"></a>unemp_benefit_number_2020_2021<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2020_2021<span class="sc">$</span>month)</span>
+<span id="cb38-30"><a href="#cb38-30" tabindex="-1"></a></span>
+<span id="cb38-31"><a href="#cb38-31" tabindex="-1"></a>unemp_benefit_number_2020_2021 <span class="ot">&lt;-</span> unemp_benefit_number_2020_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb38-32"><a href="#cb38-32" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unemp_benefit_number_total,unemp_benefit_number_male, unemp_benefit_number_female,</span>
+<span id="cb38-33"><a href="#cb38-33" tabindex="-1"></a>                unemp_benefit_yen_total, unemp_benefit_yen_male, unemp_benefit_yen_female, id, date, year) <span class="co">#IDをidのみにする 2022/11/14 </span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>unemp_benefit_number_2017_2021  <span class="ot">&lt;-</span> unemp_benefit_number_2017_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(unemp_benefit_number_2020_2021)</span></code></pre></div>
 </div>
 <div id="一般被保険者の求職者給付状況受給者実人員および支給金額の計男女のデータ2021.11-2022.5" class="section level2" number="6.3">
 <h2><span class="header-section-number">6.3</span>
 一般被保険者の求職者給付状況:受給者実人員および支給金額の計男女のデータ(2021.11-2022.5)</h2>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="co"># フォルダ内のcsvファイルの一括読み込み</span></span>
-<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a></span>
-<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a><span class="co"># 元はエクセルファイルだが、以下でCSVへ変換している</span></span>
-<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a><span class="co"># /2020COVID_impact_R/R_2021/koyo_hoken_data_csv/koyo_hoken_excel_csv.R</span></span>
-<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a></span>
-<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a><span class="do">##ディレクトリの変更(被保護調査のcsvが入っているサブフォルダ)</span></span>
-<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a>path_hogo_csv <span class="ot">&lt;-</span> <span class="fu">str_c</span>(path, <span class="st">&quot;/unemp_benefit_number_data_csv_21nov_22may&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a><span class="fu">setwd</span>(path_hogo_csv)</span>
-<span id="cb39-9"><a href="#cb39-9" tabindex="-1"></a><span class="do">##一括読み込み</span></span>
-<span id="cb39-10"><a href="#cb39-10" tabindex="-1"></a>files <span class="ot">=</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="at">glob =</span> <span class="st">&quot;*.csv&quot;</span>)</span>
-<span id="cb39-11"><a href="#cb39-11" tabindex="-1"></a><span class="do">## よみこんだfilesを結合</span></span>
-<span id="cb39-12"><a href="#cb39-12" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">map_dfr</span>(files, read_csv)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="co"># フォルダ内のcsvファイルの一括読み込み</span></span>
+<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a><span class="co"># 元はエクセルファイルだが、以下でCSVへ変換している</span></span>
+<span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a><span class="co"># /2020COVID_impact_R/R_2021/koyo_hoken_data_csv/koyo_hoken_excel_csv.R</span></span>
+<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" tabindex="-1"></a><span class="do">##ディレクトリの変更(被保護調査のcsvが入っているサブフォルダ)</span></span>
+<span id="cb40-7"><a href="#cb40-7" tabindex="-1"></a>path_hogo_csv <span class="ot">&lt;-</span> <span class="fu">str_c</span>(path, <span class="st">&quot;/unemp_benefit_number_data_csv_21nov_22may&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb40-8"><a href="#cb40-8" tabindex="-1"></a><span class="fu">setwd</span>(path_hogo_csv)</span>
+<span id="cb40-9"><a href="#cb40-9" tabindex="-1"></a><span class="do">##一括読み込み</span></span>
+<span id="cb40-10"><a href="#cb40-10" tabindex="-1"></a>files <span class="ot">=</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="at">glob =</span> <span class="st">&quot;*.csv&quot;</span>)</span>
+<span id="cb40-11"><a href="#cb40-11" tabindex="-1"></a><span class="do">## よみこんだfilesを結合</span></span>
+<span id="cb40-12"><a href="#cb40-12" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">map_dfr</span>(files, read_csv)</span></code></pre></div>
 <pre><code>## Rows: 48 Columns: 8
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -4186,89 +4202,106 @@ border-radius: 0px;
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="do">##ディレクトリ戻す</span></span>
-<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a><span class="fu">setwd</span>(path)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="do">##ディレクトリ戻す</span></span>
+<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a><span class="fu">setwd</span>(path)</span></code></pre></div>
 <p>2021.5.21追加</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="co"># 年変数の追加 </span></span>
-<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">year =</span> unemp_benefit_number_2021_2022<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">1</span>, <span class="dv">4</span>))</span>
-<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a></span>
-<span id="cb42-4"><a href="#cb42-4" tabindex="-1"></a><span class="co"># 月変数の追加</span></span>
-<span id="cb42-5"><a href="#cb42-5" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">month =</span> unemp_benefit_number_2021_2022<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">6</span>, <span class="dv">7</span>)) </span>
-<span id="cb42-6"><a href="#cb42-6" tabindex="-1"></a></span>
-<span id="cb42-7"><a href="#cb42-7" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">&quot;prefec_kanji&quot;</span> <span class="ot">=</span> <span class="st">&quot;都道府県&quot;</span>, <span class="co">#2021Jan29</span></span>
-<span id="cb42-8"><a href="#cb42-8" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_total&quot;</span> <span class="ot">=</span>  <span class="st">&quot;受給者実人数_計&quot;</span>,</span>
-<span id="cb42-9"><a href="#cb42-9" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_male&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_男&quot;</span>,</span>
-<span id="cb42-10"><a href="#cb42-10" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_女&quot;</span>,</span>
-<span id="cb42-11"><a href="#cb42-11" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_total&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_計&quot;</span>,</span>
-<span id="cb42-12"><a href="#cb42-12" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_male&quot;</span>  <span class="ot">=</span> <span class="st">&quot;支給金額_男&quot;</span>,</span>
-<span id="cb42-13"><a href="#cb42-13" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_女&quot;</span>,</span>
-<span id="cb42-14"><a href="#cb42-14" tabindex="-1"></a>                             <span class="st">&quot;date&quot;</span> <span class="ot">=</span> <span class="st">&quot;year_month&quot;</span>)</span>
-<span id="cb42-15"><a href="#cb42-15" tabindex="-1"></a></span>
-<span id="cb42-16"><a href="#cb42-16" tabindex="-1"></a></span>
-<span id="cb42-17"><a href="#cb42-17" tabindex="-1"></a><span class="co"># delete &quot;都道府県&quot;　（生保データに合わせる）(Ando移動)</span></span>
-<span id="cb42-18"><a href="#cb42-18" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span></span>
-<span id="cb42-19"><a href="#cb42-19" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;　&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span>　<span class="co"># 都道府県の空白を削除するため</span></span>
-<span id="cb42-20"><a href="#cb42-20" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;　&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span>　<span class="co"># 都道府県の空白を削除するため</span></span>
-<span id="cb42-21"><a href="#cb42-21" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;　&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span>　<span class="co"># 都道府県の空白を削除するため</span></span>
-<span id="cb42-22"><a href="#cb42-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;計&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb42-23"><a href="#cb42-23" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;県&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb42-24"><a href="#cb42-24" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji,  <span class="st">&quot;府&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb42-25"><a href="#cb42-25" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;東京都&quot;</span>, <span class="st">&quot;東京&quot;</span>))</span>
-<span id="cb42-26"><a href="#cb42-26" tabindex="-1"></a></span>
-<span id="cb42-27"><a href="#cb42-27" tabindex="-1"></a></span>
-<span id="cb42-28"><a href="#cb42-28" tabindex="-1"></a><span class="co"># idの追加</span></span>
-<span id="cb42-29"><a href="#cb42-29" tabindex="-1"></a>prefec_id <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/prefec_id.xlsx&quot;</span>)</span>
-<span id="cb42-30"><a href="#cb42-30" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(unemp_benefit_number_2021_2022, prefec_id, <span class="at">by =</span> <span class="st">&quot;prefec_kanji&quot;</span>)</span>
-<span id="cb42-31"><a href="#cb42-31" tabindex="-1"></a>unemp_benefit_number_2021_2022<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2021_2022<span class="sc">$</span>year)</span>
-<span id="cb42-32"><a href="#cb42-32" tabindex="-1"></a>unemp_benefit_number_2021_2022<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2021_2022<span class="sc">$</span>month)</span>
-<span id="cb42-33"><a href="#cb42-33" tabindex="-1"></a></span>
-<span id="cb42-34"><a href="#cb42-34" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span> </span>
-<span id="cb42-35"><a href="#cb42-35" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unemp_benefit_number_total,unemp_benefit_number_male, unemp_benefit_number_female,</span>
-<span id="cb42-36"><a href="#cb42-36" tabindex="-1"></a>                unemp_benefit_yen_total, unemp_benefit_yen_male, unemp_benefit_yen_female, id, date, year) <span class="co">#IDをidのみにする 2022/11/14 </span></span></code></pre></div>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="co"># 都道府県名の追加</span></span>
-<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a>unemp_benefit_number_2017_2022  <span class="ot">&lt;-</span> unemp_benefit_number_2017_2021 <span class="sc">%&gt;%</span> </span>
-<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(unemp_benefit_number_2021_2022)</span></code></pre></div>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a>unemp_benefit_number_2017_2022  <span class="ot">&lt;-</span> unemp_benefit_number_2017_2022  <span class="sc">%&gt;%</span> </span>
-<span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(prefec_id, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="do">## csv保存</span></span>
-<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>unemp_benefit_number_2017_2022  <span class="sc">%&gt;%</span> </span>
-<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/unemp_benefit_number.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="co"># 年変数の追加 </span></span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">year =</span> unemp_benefit_number_2021_2022<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" tabindex="-1"></a><span class="co"># 月変数の追加</span></span>
+<span id="cb43-5"><a href="#cb43-5" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">month =</span> unemp_benefit_number_2021_2022<span class="sc">$</span>year_month <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(<span class="dv">6</span>, <span class="dv">7</span>)) </span>
+<span id="cb43-6"><a href="#cb43-6" tabindex="-1"></a></span>
+<span id="cb43-7"><a href="#cb43-7" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">&quot;prefec_kanji&quot;</span> <span class="ot">=</span> <span class="st">&quot;都道府県&quot;</span>, <span class="co">#2021Jan29</span></span>
+<span id="cb43-8"><a href="#cb43-8" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_total&quot;</span> <span class="ot">=</span>  <span class="st">&quot;受給者実人数_計&quot;</span>,</span>
+<span id="cb43-9"><a href="#cb43-9" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_male&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_男&quot;</span>,</span>
+<span id="cb43-10"><a href="#cb43-10" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_number_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;受給者実人員_女&quot;</span>,</span>
+<span id="cb43-11"><a href="#cb43-11" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_total&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_計&quot;</span>,</span>
+<span id="cb43-12"><a href="#cb43-12" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_male&quot;</span>  <span class="ot">=</span> <span class="st">&quot;支給金額_男&quot;</span>,</span>
+<span id="cb43-13"><a href="#cb43-13" tabindex="-1"></a>                             <span class="st">&quot;unemp_benefit_yen_female&quot;</span> <span class="ot">=</span> <span class="st">&quot;支給金額_女&quot;</span>,</span>
+<span id="cb43-14"><a href="#cb43-14" tabindex="-1"></a>                             <span class="st">&quot;date&quot;</span> <span class="ot">=</span> <span class="st">&quot;year_month&quot;</span>)</span>
+<span id="cb43-15"><a href="#cb43-15" tabindex="-1"></a></span>
+<span id="cb43-16"><a href="#cb43-16" tabindex="-1"></a></span>
+<span id="cb43-17"><a href="#cb43-17" tabindex="-1"></a><span class="co"># delete &quot;都道府県&quot;　（生保データに合わせる）(Ando移動)</span></span>
+<span id="cb43-18"><a href="#cb43-18" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb43-19"><a href="#cb43-19" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;　&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span>　<span class="co"># 都道府県の空白を削除するため</span></span>
+<span id="cb43-20"><a href="#cb43-20" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;　&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span>　<span class="co"># 都道府県の空白を削除するため</span></span>
+<span id="cb43-21"><a href="#cb43-21" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;　&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span>　<span class="co"># 都道府県の空白を削除するため</span></span>
+<span id="cb43-22"><a href="#cb43-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;計&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb43-23"><a href="#cb43-23" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;県&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb43-24"><a href="#cb43-24" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji,  <span class="st">&quot;府&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb43-25"><a href="#cb43-25" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">prefec_kanji =</span> stringr<span class="sc">::</span><span class="fu">str_replace</span>(prefec_kanji, <span class="st">&quot;東京都&quot;</span>, <span class="st">&quot;東京&quot;</span>))</span>
+<span id="cb43-26"><a href="#cb43-26" tabindex="-1"></a></span>
+<span id="cb43-27"><a href="#cb43-27" tabindex="-1"></a></span>
+<span id="cb43-28"><a href="#cb43-28" tabindex="-1"></a><span class="co"># idの追加</span></span>
+<span id="cb43-29"><a href="#cb43-29" tabindex="-1"></a>prefec_id <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/prefec_id.xlsx&quot;</span>)</span>
+<span id="cb43-30"><a href="#cb43-30" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(unemp_benefit_number_2021_2022, prefec_id, <span class="at">by =</span> <span class="st">&quot;prefec_kanji&quot;</span>)</span>
+<span id="cb43-31"><a href="#cb43-31" tabindex="-1"></a>unemp_benefit_number_2021_2022<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2021_2022<span class="sc">$</span>year)</span>
+<span id="cb43-32"><a href="#cb43-32" tabindex="-1"></a>unemp_benefit_number_2021_2022<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(unemp_benefit_number_2021_2022<span class="sc">$</span>month)</span>
+<span id="cb43-33"><a href="#cb43-33" tabindex="-1"></a></span>
+<span id="cb43-34"><a href="#cb43-34" tabindex="-1"></a>unemp_benefit_number_2021_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2021_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb43-35"><a href="#cb43-35" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unemp_benefit_number_total,unemp_benefit_number_male, unemp_benefit_number_female,</span>
+<span id="cb43-36"><a href="#cb43-36" tabindex="-1"></a>                unemp_benefit_yen_total, unemp_benefit_yen_male, unemp_benefit_yen_female, id, date, year) <span class="co">#IDをidのみにする 2022/11/14 </span></span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a><span class="co"># 都道府県名の追加</span></span>
+<span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a>unemp_benefit_number_2017_2022  <span class="ot">&lt;-</span> unemp_benefit_number_2017_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb44-3"><a href="#cb44-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(unemp_benefit_number_2021_2022)</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>unemp_benefit_number_2017_2022  <span class="ot">&lt;-</span> unemp_benefit_number_2017_2022  <span class="sc">%&gt;%</span> </span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(prefec_id, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>)</span></code></pre></div>
 </div>
-<div id="都道府県人口10万人あたり合計男女別に変換" class="section level2" number="6.4">
-<h2><span class="header-section-number">6.4</span>
+<div id="データ書き出し-2" class="section level2" number="6.4">
+<h2><span class="header-section-number">6.4</span> データ書き出し</h2>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="do">## order (2023.10.17安藤)</span></span>
+<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a>unemp_benefit_number_2017_2022 <span class="ot">&lt;-</span> unemp_benefit_number_2017_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a>  <span class="fu">arrange</span>(id, date) </span>
+<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a><span class="do">## csv保存</span></span>
+<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a>unemp_benefit_number_2017_2022  <span class="sc">%&gt;%</span> </span>
+<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/unemp_benefit_number.csv&quot;</span>)</span></code></pre></div>
+</div>
+<div id="都道府県人口10万人あたり合計男女別に変換" class="section level2" number="6.5">
+<h2><span class="header-section-number">6.5</span>
 都道府県人口10万人あたり（合計・男女別）に変換</h2>
 <p>都道府県人口データそのものは冒頭でも読み込み使用しているので注意。
 ここでは男女別のために読み込んでいる。</p>
 <p>2020.11.25追加</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="co"># データ統合</span></span>
-<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a><span class="co">#unemp_benefit_number_2017_2022 &lt;- dplyr::left_join(unemp_benefit_number_2017_2022, population_by_gender, by = c(&quot;id&quot;, &quot;year&quot;))</span></span>
-<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a></span>
-<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a>unemp_benefit_number_percapita <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(population_by_gender, </span>
-<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a>                                                   unemp_benefit_number_2017_2022, </span>
-<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a>                                                   <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>))</span>
-<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a></span>
-<span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a><span class="co">#人口10万人あたりの受給者数および人口千人あたり金額データの作成</span></span>
-<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a>unemp_benefit_number_percapita <span class="ot">&lt;-</span> unemp_benefit_number_percapita <span class="sc">%&gt;%</span></span>
-<span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_number_total =</span> </span>
-<span id="cb46-11"><a href="#cb46-11" tabindex="-1"></a>              unemp_benefit_number_total <span class="sc">/</span> population_total <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span>  <span class="co"># number, total</span></span>
-<span id="cb46-12"><a href="#cb46-12" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_number_female =</span> </span>
-<span id="cb46-13"><a href="#cb46-13" tabindex="-1"></a>              unemp_benefit_number_female <span class="sc">/</span> population_female <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span>   <span class="co"># number, female</span></span>
-<span id="cb46-14"><a href="#cb46-14" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_number_male =</span> </span>
-<span id="cb46-15"><a href="#cb46-15" tabindex="-1"></a>              unemp_benefit_number_male <span class="sc">/</span> population_male <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span>  <span class="co"># number, male</span></span>
-<span id="cb46-16"><a href="#cb46-16" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_yen_total =</span> </span>
-<span id="cb46-17"><a href="#cb46-17" tabindex="-1"></a>              unemp_benefit_yen_total <span class="sc">/</span> population_total) <span class="sc">%&gt;%</span> <span class="co"># yen, total</span></span>
-<span id="cb46-18"><a href="#cb46-18" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_yen_female =</span></span>
-<span id="cb46-19"><a href="#cb46-19" tabindex="-1"></a>              unemp_benefit_yen_female <span class="sc">/</span> population_female) <span class="sc">%&gt;%</span>  <span class="co"># yen, female</span></span>
-<span id="cb46-20"><a href="#cb46-20" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_yen_male =</span> </span>
-<span id="cb46-21"><a href="#cb46-21" tabindex="-1"></a>              unemp_benefit_yen_male <span class="sc">/</span> population_male)  <span class="co"># yen, male</span></span>
-<span id="cb46-22"><a href="#cb46-22" tabindex="-1"></a></span>
-<span id="cb46-23"><a href="#cb46-23" tabindex="-1"></a><span class="do">## csv保存</span></span>
-<span id="cb46-24"><a href="#cb46-24" tabindex="-1"></a><span class="co">#unemp_benefit_number_2017_2022_percapita  %&gt;% readr::write_excel_csv(&quot;unemp_benefit_number_2017_2022_percapita.csv&quot;)</span></span></code></pre></div>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a>unemp_benefit_number_percapita <span class="ot">&lt;-</span> unemp_benefit_number_percapita <span class="sc">%&gt;%</span> </span>
-<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="st">&quot;2019-01-01&quot;</span>) <span class="co">#22Feb14 </span></span></code></pre></div>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="do">## csv保存</span></span>
-<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a>unemp_benefit_number_percapita <span class="sc">%&gt;%</span> </span>
-<span id="cb48-3"><a href="#cb48-3" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/unemp_benefit_number_percapita.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a><span class="co"># データ統合</span></span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a><span class="co">#unemp_benefit_number_2017_2022 &lt;- dplyr::left_join(unemp_benefit_number_2017_2022, population_by_gender, by = c(&quot;id&quot;, &quot;year&quot;))</span></span>
+<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" tabindex="-1"></a>unemp_benefit_number_percapita <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(population_by_gender, </span>
+<span id="cb47-5"><a href="#cb47-5" tabindex="-1"></a>                                                   unemp_benefit_number_2017_2022, </span>
+<span id="cb47-6"><a href="#cb47-6" tabindex="-1"></a>                                                   <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;year&quot;</span>))</span>
+<span id="cb47-7"><a href="#cb47-7" tabindex="-1"></a></span>
+<span id="cb47-8"><a href="#cb47-8" tabindex="-1"></a><span class="co">#人口10万人あたりの受給者数および人口千人あたり金額データの作成</span></span>
+<span id="cb47-9"><a href="#cb47-9" tabindex="-1"></a>unemp_benefit_number_percapita <span class="ot">&lt;-</span> unemp_benefit_number_percapita <span class="sc">%&gt;%</span></span>
+<span id="cb47-10"><a href="#cb47-10" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_number_total =</span> </span>
+<span id="cb47-11"><a href="#cb47-11" tabindex="-1"></a>              unemp_benefit_number_total <span class="sc">/</span> population_total <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span>  <span class="co"># number, total</span></span>
+<span id="cb47-12"><a href="#cb47-12" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_number_female =</span> </span>
+<span id="cb47-13"><a href="#cb47-13" tabindex="-1"></a>              unemp_benefit_number_female <span class="sc">/</span> population_female <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span>   <span class="co"># number, female</span></span>
+<span id="cb47-14"><a href="#cb47-14" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_number_male =</span> </span>
+<span id="cb47-15"><a href="#cb47-15" tabindex="-1"></a>              unemp_benefit_number_male <span class="sc">/</span> population_male <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span>  <span class="co"># number, male</span></span>
+<span id="cb47-16"><a href="#cb47-16" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_yen_total =</span> </span>
+<span id="cb47-17"><a href="#cb47-17" tabindex="-1"></a>              unemp_benefit_yen_total <span class="sc">/</span> population_total) <span class="sc">%&gt;%</span> <span class="co"># yen, total</span></span>
+<span id="cb47-18"><a href="#cb47-18" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_yen_female =</span></span>
+<span id="cb47-19"><a href="#cb47-19" tabindex="-1"></a>              unemp_benefit_yen_female <span class="sc">/</span> population_female) <span class="sc">%&gt;%</span>  <span class="co"># yen, female</span></span>
+<span id="cb47-20"><a href="#cb47-20" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">unemp_benefit_yen_male =</span> </span>
+<span id="cb47-21"><a href="#cb47-21" tabindex="-1"></a>              unemp_benefit_yen_male <span class="sc">/</span> population_male)  <span class="co"># yen, male</span></span>
+<span id="cb47-22"><a href="#cb47-22" tabindex="-1"></a></span>
+<span id="cb47-23"><a href="#cb47-23" tabindex="-1"></a><span class="do">## csv保存</span></span>
+<span id="cb47-24"><a href="#cb47-24" tabindex="-1"></a><span class="co">#unemp_benefit_number_2017_2022_percapita  %&gt;% readr::write_excel_csv(&quot;unemp_benefit_number_2017_2022_percapita.csv&quot;)</span></span></code></pre></div>
+</div>
+<div id="データ書き出し-3" class="section level2" number="6.6">
+<h2><span class="header-section-number">6.6</span> データ書き出し</h2>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="do">## order (2023.10.17 安藤追加)</span></span>
+<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a>unemp_benefit_number_percapita <span class="ot">&lt;-</span> unemp_benefit_number_percapita <span class="sc">%&gt;%</span> </span>
+<span id="cb48-3"><a href="#cb48-3" tabindex="-1"></a>  <span class="fu">arrange</span>(id, date) <span class="co"># monthがないため、dateで並び替え</span></span>
+<span id="cb48-4"><a href="#cb48-4" tabindex="-1"></a></span>
+<span id="cb48-5"><a href="#cb48-5" tabindex="-1"></a></span>
+<span id="cb48-6"><a href="#cb48-6" tabindex="-1"></a><span class="do">## filtering</span></span>
+<span id="cb48-7"><a href="#cb48-7" tabindex="-1"></a>unemp_benefit_number_percapita <span class="ot">&lt;-</span> unemp_benefit_number_percapita <span class="sc">%&gt;%</span> </span>
+<span id="cb48-8"><a href="#cb48-8" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="st">&quot;2019-01-01&quot;</span>) <span class="co">#22Feb14 </span></span>
+<span id="cb48-9"><a href="#cb48-9" tabindex="-1"></a></span>
+<span id="cb48-10"><a href="#cb48-10" tabindex="-1"></a><span class="do">## csv保存</span></span>
+<span id="cb48-11"><a href="#cb48-11" tabindex="-1"></a>unemp_benefit_number_percapita <span class="sc">%&gt;%</span> </span>
+<span id="cb48-12"><a href="#cb48-12" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/unemp_benefit_number_percapita.csv&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="生活保護都道府県データ" class="section level1" number="7">
@@ -5003,12 +5036,15 @@ csvに変換するときに変数をnumericに変更</p>
 <span id="cb64-20"><a href="#cb64-20" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.numeric</span>(stringr<span class="sc">::</span><span class="fu">str_sub</span>(date, <span class="at">start=</span><span class="dv">1</span>, <span class="at">end=</span><span class="dv">4</span>))) <span class="sc">%&gt;%</span></span>
 <span id="cb64-21"><a href="#cb64-21" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">as.numeric</span>(stringr<span class="sc">::</span><span class="fu">str_sub</span>(date, <span class="at">start=</span><span class="dv">6</span>, <span class="at">end=</span><span class="dv">7</span>))) </span>
 <span id="cb64-22"><a href="#cb64-22" tabindex="-1"></a></span>
-<span id="cb64-23"><a href="#cb64-23" tabindex="-1"></a></span>
-<span id="cb64-24"><a href="#cb64-24" tabindex="-1"></a><span class="co">#OLD</span></span>
-<span id="cb64-25"><a href="#cb64-25" tabindex="-1"></a><span class="co">#hogo_sum_2018jan_2022may$year &lt;- stringr::str_sub(hogo_sum_2018jan_2022may$date, start=1, end=4)</span></span>
-<span id="cb64-26"><a href="#cb64-26" tabindex="-1"></a><span class="co">#hogo_sum_2018jan_2022may$month &lt;- stringr::str_sub(hogo_sum_2018jan_2022may$date, start=6, end=7)</span></span></code></pre></div>
+<span id="cb64-23"><a href="#cb64-23" tabindex="-1"></a><span class="co"># order data (2023/10/17)</span></span>
+<span id="cb64-24"><a href="#cb64-24" tabindex="-1"></a>hogo_sum_2018jan_2022may <span class="ot">&lt;-</span> hogo_sum_2018jan_2022may <span class="sc">%&gt;%</span> </span>
+<span id="cb64-25"><a href="#cb64-25" tabindex="-1"></a>  <span class="fu">arrange</span>(id, year, month)</span>
+<span id="cb64-26"><a href="#cb64-26" tabindex="-1"></a></span>
+<span id="cb64-27"><a href="#cb64-27" tabindex="-1"></a><span class="co">#OLD</span></span>
+<span id="cb64-28"><a href="#cb64-28" tabindex="-1"></a><span class="co">#hogo_sum_2018jan_2022may$year &lt;- stringr::str_sub(hogo_sum_2018jan_2022may$date, start=1, end=4)</span></span>
+<span id="cb64-29"><a href="#cb64-29" tabindex="-1"></a><span class="co">#hogo_sum_2018jan_2022may$month &lt;- stringr::str_sub(hogo_sum_2018jan_2022may$date, start=6, end=7)</span></span></code></pre></div>
 </div>
-<div id="データ書き出し" class="section level2" number="7.8">
+<div id="データ書き出し-4" class="section level2" number="7.8">
 <h2><span class="header-section-number">7.8</span> データ書き出し</h2>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" tabindex="-1"></a>hogo_sum_2018jan_2022may <span class="sc">%&gt;%</span> readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/hogo_sum.csv&quot;</span>)</span></code></pre></div>
 </div>
@@ -5024,12 +5060,17 @@ csvに変換するときに変数をnumericに変更</p>
 <span id="cb66-7"><a href="#cb66-7" tabindex="-1"></a><span class="co">#人口10万人あたりデータの作成 per 100 thousandn</span></span>
 <span id="cb66-8"><a href="#cb66-8" tabindex="-1"></a>hogo_sum_percapita <span class="ot">&lt;-</span> hogo_sum_percapita <span class="sc">%&gt;%</span></span>
 <span id="cb66-9"><a href="#cb66-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(households_total<span class="sc">:</span>households_end,</span>
-<span id="cb66-10"><a href="#cb66-10" tabindex="-1"></a>                <span class="sc">~</span>(.x <span class="sc">/</span>population_total <span class="sc">*</span> <span class="dv">100</span>))) <span class="co"># per 100 thousand population</span></span></code></pre></div>
+<span id="cb66-10"><a href="#cb66-10" tabindex="-1"></a>                <span class="sc">~</span>(.x <span class="sc">/</span>population_total <span class="sc">*</span> <span class="dv">100</span>))) <span class="co"># per 100 thousand population</span></span>
+<span id="cb66-11"><a href="#cb66-11" tabindex="-1"></a></span>
+<span id="cb66-12"><a href="#cb66-12" tabindex="-1"></a><span class="co"># order data (2023/10/17)</span></span>
+<span id="cb66-13"><a href="#cb66-13" tabindex="-1"></a>hogo_sum_percapita <span class="ot">&lt;-</span> hogo_sum_percapita <span class="sc">%&gt;%</span></span>
+<span id="cb66-14"><a href="#cb66-14" tabindex="-1"></a> <span class="fu">arrange</span>(id, year, month)</span></code></pre></div>
 </div>
-<div id="データ書き出し-1" class="section level2" number="7.10">
+<div id="データ書き出し-5" class="section level2" number="7.10">
 <h2><span class="header-section-number">7.10</span> データ書き出し</h2>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" tabindex="-1"></a>hogo_sum_percapita <span class="ot">&lt;-</span> hogo_sum_percapita <span class="sc">%&gt;%</span> <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="st">&quot;2019-01-01&quot;</span>) <span class="co">#22Feb14 </span></span></code></pre></div>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" tabindex="-1"></a>hogo_sum_percapita <span class="sc">%&gt;%</span> readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/hogo_sum_percapita.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" tabindex="-1"></a>hogo_sum_percapita <span class="ot">&lt;-</span> hogo_sum_percapita <span class="sc">%&gt;%</span> <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="st">&quot;2019-01-01&quot;</span>) <span class="co">#22Feb14 </span></span>
+<span id="cb67-2"><a href="#cb67-2" tabindex="-1"></a></span>
+<span id="cb67-3"><a href="#cb67-3" tabindex="-1"></a>hogo_sum_percapita <span class="sc">%&gt;%</span> readr<span class="sc">::</span><span class="fu">write_excel_csv</span>(<span class="st">&quot;output/hogo_sum_percapita.csv&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="生活保護世帯類型別全国値" class="section level1" number="8">
@@ -5038,46 +5079,46 @@ csvに変換するときに変数をnumericに変更</p>
 <div id="生活保護データの読み込み2018.1-2019.1" class="section level2" number="8.1">
 <h2><span class="header-section-number">8.1</span>
 生活保護データの読み込み(2018.1-2019.1)</h2>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a><span class="co"># 2022Oct17  通常の時系列</span></span>
-<span id="cb69-2"><a href="#cb69-2" tabindex="-1"></a>hogo_households_receive_by_type18jan_19jan <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/hogo_households_receive_by_type18jan_19jan.xlsx&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" tabindex="-1"></a><span class="co"># 2022Oct17  通常の時系列</span></span>
+<span id="cb68-2"><a href="#cb68-2" tabindex="-1"></a>hogo_households_receive_by_type18jan_19jan <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/hogo_households_receive_by_type18jan_19jan.xlsx&quot;</span>)</span></code></pre></div>
 </div>
 <div id="生活保護データの読み込み2019.9-2021.2" class="section level2" number="8.2">
 <h2><span class="header-section-number">8.2</span>
 生活保護データの読み込み(2019.9-2021.2)</h2>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" tabindex="-1"></a><span class="co"># 2019年9月-2021年2月 ########</span></span>
-<span id="cb70-2"><a href="#cb70-2" tabindex="-1"></a>hogo_households_receive_by_type19feb_21feb <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/hogo_households_receive_by_type19feb_21feb.xlsx&quot;</span>, </span>
-<span id="cb70-3"><a href="#cb70-3" tabindex="-1"></a>                                                                 <span class="at">sheet =</span> <span class="st">&quot;表３&quot;</span>, <span class="at">skip=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a><span class="co"># 2019年9月-2021年2月 ########</span></span>
+<span id="cb69-2"><a href="#cb69-2" tabindex="-1"></a>hogo_households_receive_by_type19feb_21feb <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/hogo_households_receive_by_type19feb_21feb.xlsx&quot;</span>, </span>
+<span id="cb69-3"><a href="#cb69-3" tabindex="-1"></a>                                                                 <span class="at">sheet =</span> <span class="st">&quot;表３&quot;</span>, <span class="at">skip=</span><span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## New names:
 ## • `` -&gt; `...9`
 ## • `` -&gt; `...10`
 ## • `` -&gt; `...11`</code></pre>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" tabindex="-1"></a>hogo_households_receive_by_type19feb_21feb <span class="ot">&lt;-</span> hogo_households_receive_by_type19feb_21feb[<span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(hogo_households_receive_by_type19feb_21feb),] <span class="sc">%&gt;%</span> </span>
-<span id="cb72-2"><a href="#cb72-2" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">drop_na</span>()</span>
-<span id="cb72-3"><a href="#cb72-3" tabindex="-1"></a></span>
-<span id="cb72-4"><a href="#cb72-4" tabindex="-1"></a>hogo_households_receive_by_type19feb_21feb <span class="ot">&lt;-</span> hogo_households_receive_by_type19feb_21feb <span class="sc">%&gt;%</span> </span>
-<span id="cb72-5"><a href="#cb72-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_elderly =</span><span class="st">&quot;高齢者世帯&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb72-6"><a href="#cb72-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_singlemother =</span> <span class="st">&quot;母子世帯&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb72-7"><a href="#cb72-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_disabled =</span> <span class="st">&quot;障害者世帯&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb72-8"><a href="#cb72-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_sick =</span> <span class="st">&quot;傷病者世帯&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb72-9"><a href="#cb72-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_others  =</span> <span class="st">&quot;その他の世帯&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb72-10"><a href="#cb72-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">date  =</span> <span class="st">&quot;...9&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb72-11"><a href="#cb72-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">year  =</span> <span class="st">&quot;...10&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb72-12"><a href="#cb72-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">month  =</span> <span class="st">&quot;...11&quot;</span>) </span>
-<span id="cb72-13"><a href="#cb72-13" tabindex="-1"></a></span>
-<span id="cb72-14"><a href="#cb72-14" tabindex="-1"></a>hogo_households_receive_by_type19feb_21feb <span class="ot">&lt;-</span> hogo_households_receive_by_type19feb_21feb <span class="sc">%&gt;%</span> </span>
-<span id="cb72-15"><a href="#cb72-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(households_receive_elderly,</span>
-<span id="cb72-16"><a href="#cb72-16" tabindex="-1"></a>                households_receive_singlemother,</span>
-<span id="cb72-17"><a href="#cb72-17" tabindex="-1"></a>                households_receive_disabled,</span>
-<span id="cb72-18"><a href="#cb72-18" tabindex="-1"></a>                households_receive_sick,</span>
-<span id="cb72-19"><a href="#cb72-19" tabindex="-1"></a>                households_receive_others,</span>
-<span id="cb72-20"><a href="#cb72-20" tabindex="-1"></a>                date, year, month)</span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" tabindex="-1"></a>hogo_households_receive_by_type19feb_21feb <span class="ot">&lt;-</span> hogo_households_receive_by_type19feb_21feb[<span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(hogo_households_receive_by_type19feb_21feb),] <span class="sc">%&gt;%</span> </span>
+<span id="cb71-2"><a href="#cb71-2" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">drop_na</span>()</span>
+<span id="cb71-3"><a href="#cb71-3" tabindex="-1"></a></span>
+<span id="cb71-4"><a href="#cb71-4" tabindex="-1"></a>hogo_households_receive_by_type19feb_21feb <span class="ot">&lt;-</span> hogo_households_receive_by_type19feb_21feb <span class="sc">%&gt;%</span> </span>
+<span id="cb71-5"><a href="#cb71-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_elderly =</span><span class="st">&quot;高齢者世帯&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb71-6"><a href="#cb71-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_singlemother =</span> <span class="st">&quot;母子世帯&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb71-7"><a href="#cb71-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_disabled =</span> <span class="st">&quot;障害者世帯&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb71-8"><a href="#cb71-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_sick =</span> <span class="st">&quot;傷病者世帯&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb71-9"><a href="#cb71-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_others  =</span> <span class="st">&quot;その他の世帯&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb71-10"><a href="#cb71-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">date  =</span> <span class="st">&quot;...9&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb71-11"><a href="#cb71-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">year  =</span> <span class="st">&quot;...10&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb71-12"><a href="#cb71-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">month  =</span> <span class="st">&quot;...11&quot;</span>) </span>
+<span id="cb71-13"><a href="#cb71-13" tabindex="-1"></a></span>
+<span id="cb71-14"><a href="#cb71-14" tabindex="-1"></a>hogo_households_receive_by_type19feb_21feb <span class="ot">&lt;-</span> hogo_households_receive_by_type19feb_21feb <span class="sc">%&gt;%</span> </span>
+<span id="cb71-15"><a href="#cb71-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(households_receive_elderly,</span>
+<span id="cb71-16"><a href="#cb71-16" tabindex="-1"></a>                households_receive_singlemother,</span>
+<span id="cb71-17"><a href="#cb71-17" tabindex="-1"></a>                households_receive_disabled,</span>
+<span id="cb71-18"><a href="#cb71-18" tabindex="-1"></a>                households_receive_sick,</span>
+<span id="cb71-19"><a href="#cb71-19" tabindex="-1"></a>                households_receive_others,</span>
+<span id="cb71-20"><a href="#cb71-20" tabindex="-1"></a>                date, year, month)</span></code></pre></div>
 </div>
 <div id="生活保護データの読み込み2019.9-2021.9" class="section level2" number="8.3">
 <h2><span class="header-section-number">8.3</span>
 生活保護データの読み込み(2019.9-2021.9)</h2>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a><span class="co"># 2019年9月-2021年9月 #######</span></span>
-<span id="cb73-2"><a href="#cb73-2" tabindex="-1"></a>hogo_households_receive_by_type19sep_21sep <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/hogo_households_receive_by_type19sep_21sep.xlsx&quot;</span>,</span>
-<span id="cb73-3"><a href="#cb73-3" tabindex="-1"></a>                                                                 <span class="at">sheet =</span> <span class="st">&quot;5&quot;</span>, <span class="at">skip=</span><span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" tabindex="-1"></a><span class="co"># 2019年9月-2021年9月 #######</span></span>
+<span id="cb72-2"><a href="#cb72-2" tabindex="-1"></a>hogo_households_receive_by_type19sep_21sep <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/hogo_households_receive_by_type19sep_21sep.xlsx&quot;</span>,</span>
+<span id="cb72-3"><a href="#cb72-3" tabindex="-1"></a>                                                                 <span class="at">sheet =</span> <span class="st">&quot;5&quot;</span>, <span class="at">skip=</span><span class="dv">4</span>)</span></code></pre></div>
 <pre><code>## New names:
 ## • `` -&gt; `...1`
 ## • `` -&gt; `...2`
@@ -5105,33 +5146,33 @@ csvに変換するときに変数をnumericに変更</p>
 ## • `` -&gt; `...24`
 ## • `` -&gt; `...25`
 ## • `` -&gt; `...26`</code></pre>
-<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a>hogo_households_receive_by_type19sep_21sep <span class="ot">&lt;-</span> hogo_households_receive_by_type19sep_21sep[<span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(hogo_households_receive_by_type19sep_21sep),] <span class="sc">%&gt;%</span> </span>
-<span id="cb75-2"><a href="#cb75-2" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">drop_na</span>()</span>
-<span id="cb75-3"><a href="#cb75-3" tabindex="-1"></a></span>
-<span id="cb75-4"><a href="#cb75-4" tabindex="-1"></a>hogo_households_receive_by_type19sep_21sep <span class="ot">&lt;-</span> hogo_households_receive_by_type19sep_21sep <span class="sc">%&gt;%</span> </span>
-<span id="cb75-5"><a href="#cb75-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_elderly =</span><span class="st">&quot;高齢者世帯...5&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb75-6"><a href="#cb75-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_singlemother =</span> <span class="st">&quot;母子世帯...6&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb75-7"><a href="#cb75-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_disabled =</span> <span class="st">&quot;障害者世帯...8&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb75-8"><a href="#cb75-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_sick =</span> <span class="st">&quot;傷病者世帯...9&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb75-9"><a href="#cb75-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_others  =</span> <span class="st">&quot;その他の世帯...10&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb75-10"><a href="#cb75-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">date  =</span> <span class="st">&quot;...24&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb75-11"><a href="#cb75-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">year  =</span> <span class="st">&quot;...25&quot;</span> ) <span class="sc">%&gt;%</span> </span>
-<span id="cb75-12"><a href="#cb75-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">month  =</span> <span class="st">&quot;...26&quot;</span>) </span>
-<span id="cb75-13"><a href="#cb75-13" tabindex="-1"></a></span>
-<span id="cb75-14"><a href="#cb75-14" tabindex="-1"></a>hogo_households_receive_by_type19sep_21sep <span class="ot">&lt;-</span> hogo_households_receive_by_type19sep_21sep <span class="sc">%&gt;%</span> </span>
-<span id="cb75-15"><a href="#cb75-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(households_receive_elderly,</span>
-<span id="cb75-16"><a href="#cb75-16" tabindex="-1"></a>                households_receive_singlemother,</span>
-<span id="cb75-17"><a href="#cb75-17" tabindex="-1"></a>                households_receive_disabled,</span>
-<span id="cb75-18"><a href="#cb75-18" tabindex="-1"></a>                households_receive_sick,</span>
-<span id="cb75-19"><a href="#cb75-19" tabindex="-1"></a>                households_receive_others,</span>
-<span id="cb75-20"><a href="#cb75-20" tabindex="-1"></a>                date, year, month)</span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" tabindex="-1"></a>hogo_households_receive_by_type19sep_21sep <span class="ot">&lt;-</span> hogo_households_receive_by_type19sep_21sep[<span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(hogo_households_receive_by_type19sep_21sep),] <span class="sc">%&gt;%</span> </span>
+<span id="cb74-2"><a href="#cb74-2" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">drop_na</span>()</span>
+<span id="cb74-3"><a href="#cb74-3" tabindex="-1"></a></span>
+<span id="cb74-4"><a href="#cb74-4" tabindex="-1"></a>hogo_households_receive_by_type19sep_21sep <span class="ot">&lt;-</span> hogo_households_receive_by_type19sep_21sep <span class="sc">%&gt;%</span> </span>
+<span id="cb74-5"><a href="#cb74-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_elderly =</span><span class="st">&quot;高齢者世帯...5&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb74-6"><a href="#cb74-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_singlemother =</span> <span class="st">&quot;母子世帯...6&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb74-7"><a href="#cb74-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_disabled =</span> <span class="st">&quot;障害者世帯...8&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb74-8"><a href="#cb74-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_sick =</span> <span class="st">&quot;傷病者世帯...9&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb74-9"><a href="#cb74-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_others  =</span> <span class="st">&quot;その他の世帯...10&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb74-10"><a href="#cb74-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">date  =</span> <span class="st">&quot;...24&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb74-11"><a href="#cb74-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">year  =</span> <span class="st">&quot;...25&quot;</span> ) <span class="sc">%&gt;%</span> </span>
+<span id="cb74-12"><a href="#cb74-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">month  =</span> <span class="st">&quot;...26&quot;</span>) </span>
+<span id="cb74-13"><a href="#cb74-13" tabindex="-1"></a></span>
+<span id="cb74-14"><a href="#cb74-14" tabindex="-1"></a>hogo_households_receive_by_type19sep_21sep <span class="ot">&lt;-</span> hogo_households_receive_by_type19sep_21sep <span class="sc">%&gt;%</span> </span>
+<span id="cb74-15"><a href="#cb74-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(households_receive_elderly,</span>
+<span id="cb74-16"><a href="#cb74-16" tabindex="-1"></a>                households_receive_singlemother,</span>
+<span id="cb74-17"><a href="#cb74-17" tabindex="-1"></a>                households_receive_disabled,</span>
+<span id="cb74-18"><a href="#cb74-18" tabindex="-1"></a>                households_receive_sick,</span>
+<span id="cb74-19"><a href="#cb74-19" tabindex="-1"></a>                households_receive_others,</span>
+<span id="cb74-20"><a href="#cb74-20" tabindex="-1"></a>                date, year, month)</span></code></pre></div>
 </div>
 <div id="生活保護データの読み込み2020.4-2022.4" class="section level2" number="8.4">
 <h2><span class="header-section-number">8.4</span>
 生活保護データの読み込み(2020.4-2022.4)</h2>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" tabindex="-1"></a><span class="co"># 2020年4月-2022年4月 #######</span></span>
-<span id="cb76-2"><a href="#cb76-2" tabindex="-1"></a>hogo_households_receive_by_type20apr_22apr <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/hogo_households_receive_by_type20apr_22apr.xlsx&quot;</span>,</span>
-<span id="cb76-3"><a href="#cb76-3" tabindex="-1"></a>                                                                 <span class="at">sheet =</span> <span class="st">&quot;5&quot;</span>, <span class="at">skip=</span><span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a><span class="co"># 2020年4月-2022年4月 #######</span></span>
+<span id="cb75-2"><a href="#cb75-2" tabindex="-1"></a>hogo_households_receive_by_type20apr_22apr <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">&quot;input/hogo_households_receive_by_type20apr_22apr.xlsx&quot;</span>,</span>
+<span id="cb75-3"><a href="#cb75-3" tabindex="-1"></a>                                                                 <span class="at">sheet =</span> <span class="st">&quot;5&quot;</span>, <span class="at">skip=</span><span class="dv">4</span>)</span></code></pre></div>
 <pre><code>## New names:
 ## • `` -&gt; `...1`
 ## • `` -&gt; `...2`
@@ -5159,91 +5200,96 @@ csvに変換するときに変数をnumericに変更</p>
 ## • `` -&gt; `...24`
 ## • `` -&gt; `...25`
 ## • `` -&gt; `...26`</code></pre>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" tabindex="-1"></a>hogo_households_receive_by_type20apr_22apr <span class="ot">&lt;-</span> hogo_households_receive_by_type20apr_22apr[<span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(hogo_households_receive_by_type20apr_22apr),] <span class="sc">%&gt;%</span> </span>
-<span id="cb78-2"><a href="#cb78-2" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">drop_na</span>()</span>
-<span id="cb78-3"><a href="#cb78-3" tabindex="-1"></a></span>
-<span id="cb78-4"><a href="#cb78-4" tabindex="-1"></a>hogo_households_receive_by_type20apr_22apr <span class="ot">&lt;-</span> hogo_households_receive_by_type20apr_22apr <span class="sc">%&gt;%</span> </span>
-<span id="cb78-5"><a href="#cb78-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_elderly =</span><span class="st">&quot;高齢者世帯...5&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb78-6"><a href="#cb78-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_singlemother =</span> <span class="st">&quot;母子世帯...6&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb78-7"><a href="#cb78-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_disabled =</span> <span class="st">&quot;障害者世帯...8&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb78-8"><a href="#cb78-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_sick =</span> <span class="st">&quot;傷病者世帯...9&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb78-9"><a href="#cb78-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_others  =</span> <span class="st">&quot;その他の世帯...10&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb78-10"><a href="#cb78-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">date  =</span> <span class="st">&quot;...24&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb78-11"><a href="#cb78-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">year  =</span> <span class="st">&quot;...25&quot;</span> ) <span class="sc">%&gt;%</span> </span>
-<span id="cb78-12"><a href="#cb78-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">month  =</span> <span class="st">&quot;...26&quot;</span>) </span>
-<span id="cb78-13"><a href="#cb78-13" tabindex="-1"></a></span>
-<span id="cb78-14"><a href="#cb78-14" tabindex="-1"></a>hogo_households_receive_by_type20apr_22apr <span class="ot">&lt;-</span> hogo_households_receive_by_type20apr_22apr <span class="sc">%&gt;%</span> </span>
-<span id="cb78-15"><a href="#cb78-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(households_receive_elderly,</span>
-<span id="cb78-16"><a href="#cb78-16" tabindex="-1"></a>                households_receive_singlemother,</span>
-<span id="cb78-17"><a href="#cb78-17" tabindex="-1"></a>                households_receive_disabled,</span>
-<span id="cb78-18"><a href="#cb78-18" tabindex="-1"></a>                households_receive_sick,</span>
-<span id="cb78-19"><a href="#cb78-19" tabindex="-1"></a>                households_receive_others,</span>
-<span id="cb78-20"><a href="#cb78-20" tabindex="-1"></a>                date, year, month)</span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" tabindex="-1"></a>hogo_households_receive_by_type20apr_22apr <span class="ot">&lt;-</span> hogo_households_receive_by_type20apr_22apr[<span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(hogo_households_receive_by_type20apr_22apr),] <span class="sc">%&gt;%</span> </span>
+<span id="cb77-2"><a href="#cb77-2" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">drop_na</span>()</span>
+<span id="cb77-3"><a href="#cb77-3" tabindex="-1"></a></span>
+<span id="cb77-4"><a href="#cb77-4" tabindex="-1"></a>hogo_households_receive_by_type20apr_22apr <span class="ot">&lt;-</span> hogo_households_receive_by_type20apr_22apr <span class="sc">%&gt;%</span> </span>
+<span id="cb77-5"><a href="#cb77-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_elderly =</span><span class="st">&quot;高齢者世帯...5&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb77-6"><a href="#cb77-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_singlemother =</span> <span class="st">&quot;母子世帯...6&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb77-7"><a href="#cb77-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_disabled =</span> <span class="st">&quot;障害者世帯...8&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb77-8"><a href="#cb77-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_sick =</span> <span class="st">&quot;傷病者世帯...9&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb77-9"><a href="#cb77-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">households_receive_others  =</span> <span class="st">&quot;その他の世帯...10&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb77-10"><a href="#cb77-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">date  =</span> <span class="st">&quot;...24&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb77-11"><a href="#cb77-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">year  =</span> <span class="st">&quot;...25&quot;</span> ) <span class="sc">%&gt;%</span> </span>
+<span id="cb77-12"><a href="#cb77-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">month  =</span> <span class="st">&quot;...26&quot;</span>) </span>
+<span id="cb77-13"><a href="#cb77-13" tabindex="-1"></a></span>
+<span id="cb77-14"><a href="#cb77-14" tabindex="-1"></a>hogo_households_receive_by_type20apr_22apr <span class="ot">&lt;-</span> hogo_households_receive_by_type20apr_22apr <span class="sc">%&gt;%</span> </span>
+<span id="cb77-15"><a href="#cb77-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(households_receive_elderly,</span>
+<span id="cb77-16"><a href="#cb77-16" tabindex="-1"></a>                households_receive_singlemother,</span>
+<span id="cb77-17"><a href="#cb77-17" tabindex="-1"></a>                households_receive_disabled,</span>
+<span id="cb77-18"><a href="#cb77-18" tabindex="-1"></a>                households_receive_sick,</span>
+<span id="cb77-19"><a href="#cb77-19" tabindex="-1"></a>                households_receive_others,</span>
+<span id="cb77-20"><a href="#cb77-20" tabindex="-1"></a>                date, year, month)</span></code></pre></div>
 </div>
 <div id="生活保護データの結合-1" class="section level2" number="8.5">
 <h2><span class="header-section-number">8.5</span>
 生活保護データの結合</h2>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a><span class="co">#結合 ###############</span></span>
-<span id="cb79-2"><a href="#cb79-2" tabindex="-1"></a>hogo_households_receive_by_type19feb_21sep <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(hogo_households_receive_by_type19feb_21feb, hogo_households_receive_by_type19sep_21sep)</span>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" tabindex="-1"></a><span class="co">#結合 ###############</span></span>
+<span id="cb78-2"><a href="#cb78-2" tabindex="-1"></a>hogo_households_receive_by_type19feb_21sep <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(hogo_households_receive_by_type19feb_21feb, hogo_households_receive_by_type19sep_21sep)</span>
+<span id="cb78-3"><a href="#cb78-3" tabindex="-1"></a></span>
+<span id="cb78-4"><a href="#cb78-4" tabindex="-1"></a>hogo_households_receive_by_type <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(hogo_households_receive_by_type19feb_21sep, hogo_households_receive_by_type20apr_22apr)</span>
+<span id="cb78-5"><a href="#cb78-5" tabindex="-1"></a></span>
+<span id="cb78-6"><a href="#cb78-6" tabindex="-1"></a>hogo_households_receive_by_type <span class="ot">&lt;-</span> hogo_households_receive_by_type <span class="sc">%&gt;%</span> </span>
+<span id="cb78-7"><a href="#cb78-7" tabindex="-1"></a>  <span class="fu">distinct</span>(date,<span class="at">.keep_all=</span><span class="cn">TRUE</span>) <span class="co">#重複行を削除</span></span>
+<span id="cb78-8"><a href="#cb78-8" tabindex="-1"></a></span>
+<span id="cb78-9"><a href="#cb78-9" tabindex="-1"></a>hogo_households_receive_by_type <span class="ot">&lt;-</span> hogo_households_receive_by_type[<span class="fu">order</span>(hogo_households_receive_by_type<span class="sc">$</span>date,</span>
+<span id="cb78-10"><a href="#cb78-10" tabindex="-1"></a>                                                                         <span class="at">decreasing=</span>F),]</span></code></pre></div>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a><span class="co"># 2022Oct17  通常の時系列################################################</span></span>
+<span id="cb79-2"><a href="#cb79-2" tabindex="-1"></a>hogo_households_receive_by_type_raw <span class="ot">&lt;-</span> hogo_households_receive_by_type</span>
 <span id="cb79-3"><a href="#cb79-3" tabindex="-1"></a></span>
-<span id="cb79-4"><a href="#cb79-4" tabindex="-1"></a>hogo_households_receive_by_type <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(hogo_households_receive_by_type19feb_21sep, hogo_households_receive_by_type20apr_22apr)</span>
-<span id="cb79-5"><a href="#cb79-5" tabindex="-1"></a></span>
-<span id="cb79-6"><a href="#cb79-6" tabindex="-1"></a>hogo_households_receive_by_type <span class="ot">&lt;-</span> hogo_households_receive_by_type <span class="sc">%&gt;%</span> </span>
-<span id="cb79-7"><a href="#cb79-7" tabindex="-1"></a>  <span class="fu">distinct</span>(date,<span class="at">.keep_all=</span><span class="cn">TRUE</span>) <span class="co">#重複行を削除</span></span>
-<span id="cb79-8"><a href="#cb79-8" tabindex="-1"></a></span>
-<span id="cb79-9"><a href="#cb79-9" tabindex="-1"></a>hogo_households_receive_by_type <span class="ot">&lt;-</span> hogo_households_receive_by_type[<span class="fu">order</span>(hogo_households_receive_by_type<span class="sc">$</span>date,</span>
-<span id="cb79-10"><a href="#cb79-10" tabindex="-1"></a>                                                                         <span class="at">decreasing=</span>F),]</span></code></pre></div>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" tabindex="-1"></a><span class="co"># 2022Oct17  通常の時系列################################################</span></span>
-<span id="cb80-2"><a href="#cb80-2" tabindex="-1"></a>hogo_households_receive_by_type_raw <span class="ot">&lt;-</span> hogo_households_receive_by_type</span>
-<span id="cb80-3"><a href="#cb80-3" tabindex="-1"></a></span>
-<span id="cb80-4"><a href="#cb80-4" tabindex="-1"></a>hogo_households_receive_by_type_raw[ , <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="fu">apply</span>(hogo_households_receive_by_type_raw[ , <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="dv">2</span>,            <span class="co"># Specify own function within apply</span></span>
-<span id="cb80-5"><a href="#cb80-5" tabindex="-1"></a>                    <span class="cf">function</span>(x) <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(x)))</span>
-<span id="cb80-6"><a href="#cb80-6" tabindex="-1"></a></span>
-<span id="cb80-7"><a href="#cb80-7" tabindex="-1"></a>hogo_households_receive_by_type_raw <span class="ot">&lt;-</span> hogo_households_receive_by_type_raw <span class="sc">%&gt;%</span> </span>
-<span id="cb80-8"><a href="#cb80-8" tabindex="-1"></a>  <span class="fu">bind_rows</span>(hogo_households_receive_by_type18jan_19jan, hogo_households_receive_by_type_raw)</span>
-<span id="cb80-9"><a href="#cb80-9" tabindex="-1"></a></span>
-<span id="cb80-10"><a href="#cb80-10" tabindex="-1"></a>hogo_households_receive_by_type_raw <span class="ot">&lt;-</span> hogo_households_receive_by_type_raw　<span class="sc">%&gt;%</span> </span>
-<span id="cb80-11"><a href="#cb80-11" tabindex="-1"></a>  <span class="fu">distinct</span>(date, <span class="at">.keep_all=</span>T)</span></code></pre></div>
+<span id="cb79-4"><a href="#cb79-4" tabindex="-1"></a>hogo_households_receive_by_type_raw[ , <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="fu">apply</span>(hogo_households_receive_by_type_raw[ , <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="dv">2</span>,            <span class="co"># Specify own function within apply</span></span>
+<span id="cb79-5"><a href="#cb79-5" tabindex="-1"></a>                    <span class="cf">function</span>(x) <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(x)))</span>
+<span id="cb79-6"><a href="#cb79-6" tabindex="-1"></a></span>
+<span id="cb79-7"><a href="#cb79-7" tabindex="-1"></a>hogo_households_receive_by_type_raw <span class="ot">&lt;-</span> hogo_households_receive_by_type_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb79-8"><a href="#cb79-8" tabindex="-1"></a>  <span class="fu">bind_rows</span>(hogo_households_receive_by_type18jan_19jan, hogo_households_receive_by_type_raw)</span>
+<span id="cb79-9"><a href="#cb79-9" tabindex="-1"></a></span>
+<span id="cb79-10"><a href="#cb79-10" tabindex="-1"></a>hogo_households_receive_by_type_raw <span class="ot">&lt;-</span> hogo_households_receive_by_type_raw　<span class="sc">%&gt;%</span> </span>
+<span id="cb79-11"><a href="#cb79-11" tabindex="-1"></a>  <span class="fu">distinct</span>(date, <span class="at">.keep_all=</span>T)</span></code></pre></div>
 </div>
 <div id="世帯類型の前年同月差" class="section level2" number="8.6">
 <h2><span class="header-section-number">8.6</span>
 世帯類型の前年同月差</h2>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="do">###############################################################################</span></span>
-<span id="cb81-2"><a href="#cb81-2" tabindex="-1"></a><span class="co"># long形式に変換</span></span>
-<span id="cb81-3"><a href="#cb81-3" tabindex="-1"></a>hogo_households_receive_by_type <span class="ot">&lt;-</span> hogo_households_receive_by_type_raw <span class="sc">%&gt;%</span> </span>
-<span id="cb81-4"><a href="#cb81-4" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(households_receive_elderly<span class="sc">:</span>households_receive_others,</span>
-<span id="cb81-5"><a href="#cb81-5" tabindex="-1"></a>                                                      <span class="at">names_to =</span> <span class="st">&quot;type&quot;</span>, </span>
-<span id="cb81-6"><a href="#cb81-6" tabindex="-1"></a>                                                      <span class="at">names_prefix =</span> <span class="st">&quot;number&quot;</span>, </span>
-<span id="cb81-7"><a href="#cb81-7" tabindex="-1"></a>                                                      <span class="at">values_to =</span> <span class="st">&quot;number&quot;</span>)</span>
-<span id="cb81-8"><a href="#cb81-8" tabindex="-1"></a></span>
-<span id="cb81-9"><a href="#cb81-9" tabindex="-1"></a>hogo_households_receive_by_type<span class="sc">$</span>number <span class="ot">&lt;-</span>  <span class="fu">as.numeric</span>(hogo_households_receive_by_type<span class="sc">$</span>number)</span>
-<span id="cb81-10"><a href="#cb81-10" tabindex="-1"></a></span>
-<span id="cb81-11"><a href="#cb81-11" tabindex="-1"></a>yoy_hogo_households_receive_by_type <span class="ot">&lt;-</span> hogo_households_receive_by_type <span class="sc">%&gt;%</span></span>
-<span id="cb81-12"><a href="#cb81-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(type, month) <span class="sc">%&gt;%</span></span>
-<span id="cb81-13"><a href="#cb81-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year_lag_number =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(number, <span class="at">order_by =</span> year)) <span class="sc">%&gt;%</span> </span>
-<span id="cb81-14"><a href="#cb81-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yoy_lag_number =</span> number <span class="sc">-</span> year_lag_number) <span class="sc">%&gt;%</span> </span>
-<span id="cb81-15"><a href="#cb81-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>() </span></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" tabindex="-1"></a><span class="do">###############################################################################</span></span>
+<span id="cb80-2"><a href="#cb80-2" tabindex="-1"></a><span class="co"># long形式に変換</span></span>
+<span id="cb80-3"><a href="#cb80-3" tabindex="-1"></a>hogo_households_receive_by_type <span class="ot">&lt;-</span> hogo_households_receive_by_type_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb80-4"><a href="#cb80-4" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(households_receive_elderly<span class="sc">:</span>households_receive_others,</span>
+<span id="cb80-5"><a href="#cb80-5" tabindex="-1"></a>                                                      <span class="at">names_to =</span> <span class="st">&quot;type&quot;</span>, </span>
+<span id="cb80-6"><a href="#cb80-6" tabindex="-1"></a>                                                      <span class="at">names_prefix =</span> <span class="st">&quot;number&quot;</span>, </span>
+<span id="cb80-7"><a href="#cb80-7" tabindex="-1"></a>                                                      <span class="at">values_to =</span> <span class="st">&quot;number&quot;</span>)</span>
+<span id="cb80-8"><a href="#cb80-8" tabindex="-1"></a></span>
+<span id="cb80-9"><a href="#cb80-9" tabindex="-1"></a>hogo_households_receive_by_type<span class="sc">$</span>number <span class="ot">&lt;-</span>  <span class="fu">as.numeric</span>(hogo_households_receive_by_type<span class="sc">$</span>number)</span>
+<span id="cb80-10"><a href="#cb80-10" tabindex="-1"></a></span>
+<span id="cb80-11"><a href="#cb80-11" tabindex="-1"></a>yoy_hogo_households_receive_by_type <span class="ot">&lt;-</span> hogo_households_receive_by_type <span class="sc">%&gt;%</span></span>
+<span id="cb80-12"><a href="#cb80-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(type, month) <span class="sc">%&gt;%</span></span>
+<span id="cb80-13"><a href="#cb80-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year_lag_number =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(number, <span class="at">order_by =</span> year)) <span class="sc">%&gt;%</span> </span>
+<span id="cb80-14"><a href="#cb80-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yoy_lag_number =</span> number <span class="sc">-</span> year_lag_number) <span class="sc">%&gt;%</span> </span>
+<span id="cb80-15"><a href="#cb80-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>() </span></code></pre></div>
 </div>
 <div id="データの書き出し" class="section level2" number="8.7">
 <h2><span class="header-section-number">8.7</span> データの書き出し</h2>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" tabindex="-1"></a><span class="co"># wideに変換</span></span>
-<span id="cb82-2"><a href="#cb82-2" tabindex="-1"></a>yoy_hogo_households_receive_by_type <span class="ot">&lt;-</span> yoy_hogo_households_receive_by_type <span class="sc">%&gt;%</span>  </span>
-<span id="cb82-3"><a href="#cb82-3" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="sc">-</span><span class="fu">c</span>(number, year_lag_number), </span>
-<span id="cb82-4"><a href="#cb82-4" tabindex="-1"></a>                     <span class="at">names_from =</span> <span class="st">&quot;type&quot;</span>, </span>
-<span id="cb82-5"><a href="#cb82-5" tabindex="-1"></a>                     <span class="at">values_from  =</span> <span class="st">&quot;yoy_lag_number&quot;</span>)</span>
-<span id="cb82-6"><a href="#cb82-6" tabindex="-1"></a></span>
-<span id="cb82-7"><a href="#cb82-7" tabindex="-1"></a><span class="co"># %&gt;% tidyr::drop_na() 無効化 Ando 2022.11.8</span></span>
-<span id="cb82-8"><a href="#cb82-8" tabindex="-1"></a></span>
-<span id="cb82-9"><a href="#cb82-9" tabindex="-1"></a>yoy_hogo_households_receive_by_type <span class="ot">&lt;-</span> yoy_hogo_households_receive_by_type <span class="sc">%&gt;%</span> </span>
-<span id="cb82-10"><a href="#cb82-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">yoy_households_receive_elderly =</span> households_receive_elderly, </span>
-<span id="cb82-11"><a href="#cb82-11" tabindex="-1"></a>                <span class="at">yoy_households_receive_singlemother =</span> households_receive_singlemother, </span>
-<span id="cb82-12"><a href="#cb82-12" tabindex="-1"></a>                <span class="at">yoy_households_receive_disabled  =</span> households_receive_disabled, </span>
-<span id="cb82-13"><a href="#cb82-13" tabindex="-1"></a>                <span class="at">yoy_households_receive_sick =</span> households_receive_sick,  </span>
-<span id="cb82-14"><a href="#cb82-14" tabindex="-1"></a>                <span class="at">yoy_households_receive_others =</span> households_receive_others) <span class="sc">%&gt;%</span></span>
-<span id="cb82-15"><a href="#cb82-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span> households_receive_total) <span class="co"># 2023.10.4　安藤追加（不必要なため）</span></span>
-<span id="cb82-16"><a href="#cb82-16" tabindex="-1"></a></span>
-<span id="cb82-17"><a href="#cb82-17" tabindex="-1"></a>yoy_hogo_households_receive_by_type <span class="sc">%&gt;%</span> </span>
-<span id="cb82-18"><a href="#cb82-18" tabindex="-1"></a>  <span class="fu">write_csv</span>(<span class="st">&quot;output/yoy_hogo_households_receive_by_type.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="co"># wideに変換</span></span>
+<span id="cb81-2"><a href="#cb81-2" tabindex="-1"></a>yoy_hogo_households_receive_by_type <span class="ot">&lt;-</span> yoy_hogo_households_receive_by_type <span class="sc">%&gt;%</span>  </span>
+<span id="cb81-3"><a href="#cb81-3" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="sc">-</span><span class="fu">c</span>(number, year_lag_number), </span>
+<span id="cb81-4"><a href="#cb81-4" tabindex="-1"></a>                     <span class="at">names_from =</span> <span class="st">&quot;type&quot;</span>, </span>
+<span id="cb81-5"><a href="#cb81-5" tabindex="-1"></a>                     <span class="at">values_from  =</span> <span class="st">&quot;yoy_lag_number&quot;</span>)</span>
+<span id="cb81-6"><a href="#cb81-6" tabindex="-1"></a></span>
+<span id="cb81-7"><a href="#cb81-7" tabindex="-1"></a><span class="co"># %&gt;% tidyr::drop_na() 無効化 Ando 2022.11.8</span></span>
+<span id="cb81-8"><a href="#cb81-8" tabindex="-1"></a></span>
+<span id="cb81-9"><a href="#cb81-9" tabindex="-1"></a>yoy_hogo_households_receive_by_type <span class="ot">&lt;-</span> yoy_hogo_households_receive_by_type <span class="sc">%&gt;%</span> </span>
+<span id="cb81-10"><a href="#cb81-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">yoy_households_receive_elderly =</span> households_receive_elderly, </span>
+<span id="cb81-11"><a href="#cb81-11" tabindex="-1"></a>                <span class="at">yoy_households_receive_singlemother =</span> households_receive_singlemother, </span>
+<span id="cb81-12"><a href="#cb81-12" tabindex="-1"></a>                <span class="at">yoy_households_receive_disabled  =</span> households_receive_disabled, </span>
+<span id="cb81-13"><a href="#cb81-13" tabindex="-1"></a>                <span class="at">yoy_households_receive_sick =</span> households_receive_sick,  </span>
+<span id="cb81-14"><a href="#cb81-14" tabindex="-1"></a>                <span class="at">yoy_households_receive_others =</span> households_receive_others) <span class="sc">%&gt;%</span></span>
+<span id="cb81-15"><a href="#cb81-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span> households_receive_total) <span class="co"># 2023.10.4　安藤追加（不必要なため）</span></span>
+<span id="cb81-16"><a href="#cb81-16" tabindex="-1"></a></span>
+<span id="cb81-17"><a href="#cb81-17" tabindex="-1"></a><span class="co"># order data (2023.10.17)</span></span>
+<span id="cb81-18"><a href="#cb81-18" tabindex="-1"></a>yoy_hogo_households_receive_by_type <span class="ot">&lt;-</span> yoy_hogo_households_receive_by_type <span class="sc">%&gt;%</span></span>
+<span id="cb81-19"><a href="#cb81-19" tabindex="-1"></a>  <span class="fu">arrange</span>(year, month)</span>
+<span id="cb81-20"><a href="#cb81-20" tabindex="-1"></a></span>
+<span id="cb81-21"><a href="#cb81-21" tabindex="-1"></a><span class="co">#データ書き出し</span></span>
+<span id="cb81-22"><a href="#cb81-22" tabindex="-1"></a>yoy_hogo_households_receive_by_type <span class="sc">%&gt;%</span> </span>
+<span id="cb81-23"><a href="#cb81-23" tabindex="-1"></a>  <span class="fu">write_csv</span>(<span class="st">&quot;output/yoy_hogo_households_receive_by_type.csv&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 

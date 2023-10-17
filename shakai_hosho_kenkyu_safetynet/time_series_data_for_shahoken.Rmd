@@ -589,6 +589,17 @@ koguchi_sogo_jukyo_2019jan_2021may <- koguchi_sogo_jukyo_2019jan_2021may %>%
 
 
 ```{r}
+koguchi_sogo_jukyo_2019jan_2021may <- koguchi_sogo_jukyo_2019jan_2021may %>% 
+  dplyr::left_join(prefec_id, by = "id") #2023.10.17 安藤, グラフ用の都道府県名の追加
+```
+
+## データ書き出し
+
+```{r}
+# order (2023.10.17 安藤)
+koguchi_sogo_jukyo_2019jan_2021may <- koguchi_sogo_jukyo_2019jan_2021may %>% 
+  arrange(id, year, month)
+
 # 合計値の出力 2022Feb1
 koguchi_sogo_jukyo_2019jan_2021may %>% readr::write_excel_csv("output/koguchi_sogo_jukyo.csv")
 ```
@@ -640,7 +651,12 @@ koguchi_sogo_jukyo_percapita <- koguchi_sogo_jukyo_percapita %>%
   dplyr::left_join(prefec_id, by = "id") #2022/11/14 グラフ用の都道府県名の追加
 ```
 
+## データ書き出し
 ```{r}
+## order (2023.10.17 安藤)
+koguchi_sogo_jukyo_percapita <- koguchi_sogo_jukyo_percapita %>%
+  arrange(id, year, month)
+
 ## csv保存
 koguchi_sogo_jukyo_percapita %>% 
   readr::write_excel_csv("output/koguchi_sogo_jukyo_percapita.csv")
@@ -872,7 +888,13 @@ unemp_benefit_number_2017_2022  <- unemp_benefit_number_2017_2022  %>%
   dplyr::left_join(prefec_id, by = "id")
 ```
 
+## データ書き出し
+
 ```{r}
+## order (2023.10.17安藤)
+unemp_benefit_number_2017_2022 <- unemp_benefit_number_2017_2022 %>% 
+  arrange(id, date) 
+
 ## csv保存
 unemp_benefit_number_2017_2022  %>% 
   readr::write_excel_csv("output/unemp_benefit_number.csv")
@@ -912,13 +934,18 @@ dplyr::mutate(unemp_benefit_yen_male =
 #unemp_benefit_number_2017_2022_percapita  %>% readr::write_excel_csv("unemp_benefit_number_2017_2022_percapita.csv")
 ```
 
+## データ書き出し
 
 ```{r}
+## order (2023.10.17 安藤追加)
+unemp_benefit_number_percapita <- unemp_benefit_number_percapita %>% 
+  arrange(id, date) # monthがないため、dateで並び替え
+
+
+## filtering
 unemp_benefit_number_percapita <- unemp_benefit_number_percapita %>% 
   filter(date >= "2019-01-01") #22Feb14 
-```
 
-```{r}
 ## csv保存
 unemp_benefit_number_percapita %>% 
   readr::write_excel_csv("output/unemp_benefit_number_percapita.csv")
@@ -1166,6 +1193,9 @@ hogo_sum_2018jan_2022may <- hogo_sum_2018jan_2022may %>%
   dplyr::mutate(year = as.numeric(stringr::str_sub(date, start=1, end=4))) %>%
   dplyr::mutate(month = as.numeric(stringr::str_sub(date, start=6, end=7))) 
 
+# order data (2023/10/17)
+hogo_sum_2018jan_2022may <- hogo_sum_2018jan_2022may %>% 
+  arrange(id, year, month)
 
 #OLD
 #hogo_sum_2018jan_2022may$year <- stringr::str_sub(hogo_sum_2018jan_2022may$date, start=1, end=4)
@@ -1190,16 +1220,16 @@ hogo_sum_percapita <- dplyr::left_join(hogo_sum_2018jan_2022may,
 hogo_sum_percapita <- hogo_sum_percapita %>%
   dplyr::mutate(across(households_total:households_end,
                 ~(.x /population_total * 100))) # per 100 thousand population
-```
 
+# order data (2023/10/17)
+hogo_sum_percapita <- hogo_sum_percapita %>%
+ arrange(id, year, month)
+```
 
 ## データ書き出し
 ```{r}
 hogo_sum_percapita <- hogo_sum_percapita %>% filter(date >= "2019-01-01") #22Feb14 
-```
 
-
-```{r}
 hogo_sum_percapita %>% readr::write_excel_csv("output/hogo_sum_percapita.csv")
 ```
 
@@ -1365,6 +1395,11 @@ yoy_hogo_households_receive_by_type <- yoy_hogo_households_receive_by_type %>%
                 yoy_households_receive_others = households_receive_others) %>%
   dplyr::select(- households_receive_total) # 2023.10.4　安藤追加（不必要なため）
 
+# order data (2023.10.17)
+yoy_hogo_households_receive_by_type <- yoy_hogo_households_receive_by_type %>%
+  arrange(year, month)
+
+#データ書き出し
 yoy_hogo_households_receive_by_type %>% 
   write_csv("output/yoy_hogo_households_receive_by_type.csv")
 
